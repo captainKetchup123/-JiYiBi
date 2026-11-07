@@ -27,7 +27,7 @@
 
 
 /* 品牌首页入口：电脑悬停、手机按下和键盘聚焦均有反馈 */
-.brand-home-link{width:100%;border:0;background:transparent;text-align:left;cursor:pointer;position:relative;border-radius:16px;color:var(--text);transition:background-color .25s ease,transform .22s ease; -webkit-tap-highlight-color:transparent}
+.brand-home-link{width:100%;border:0;background:transparent;text-align:left;cursor:pointer;position:relative;border-radius:16px;color:var(--text);transition:background-color .62s cubic-bezier(.22,.68,.16,1),transform .22s ease; -webkit-tap-highlight-color:transparent}
 .brand-home-link .brand-symbol{transition:transform .32s cubic-bezier(.2,.8,.2,1),filter .32s ease;transform-origin:center}
 .brand-home-link .brand-wordmark{transition:color .23s ease,transform .3s cubic-bezier(.2,.8,.2,1);display:inline-block}
 .brand-home-link:hover{background:var(--bluewash)}
@@ -68,6 +68,95 @@
 .home-manage-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:13px;padding:12px 14px;color:var(--text)}
 .home-manage-row button{min-width:84px}
 .home-manage-row span{font-weight:650}
+
+/* V95: 顶部月份切换按钮增加立体感 */
+.monthgroup button,
+.toolbar > .btn.small{
+  min-height:48px;
+  border-radius:14px;
+  border:1px solid #dfe6f4;
+  background:linear-gradient(180deg,#ffffff 0%,#f7faff 100%);
+  box-shadow:0 10px 20px rgba(75,101,145,.08), inset 0 1px 0 rgba(255,255,255,.95);
+  color:var(--text);
+  font-weight:800;
+  transition:transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, background .22s ease, border-color .22s ease;
+}
+.monthgroup button{
+  width:42px;
+  height:48px;
+  font-size:22px;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.toolbar > .btn.small{
+  padding:0 18px;
+  font-size:15px;
+}
+.monthgroup button:hover,
+.toolbar > .btn.small:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 26px rgba(75,101,145,.11), inset 0 1px 0 rgba(255,255,255,.98);
+}
+.monthgroup button:active,
+.toolbar > .btn.small:active{
+  transform:translateY(1px) scale(.985);
+  box-shadow:0 5px 12px rgba(75,101,145,.1), inset 0 2px 6px rgba(105,132,178,.08);
+  background:linear-gradient(180deg,#f5f8ff 0%,#eef3ff 100%);
+}
+.monthgroup b{
+  min-width:128px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--text);
+}
+@media(max-width:800px){
+  .monthgroup button,
+  .toolbar > .btn.small{min-height:44px;border-radius:13px}
+  .monthgroup button{width:40px;height:44px;font-size:20px}
+  .toolbar > .btn.small{padding:0 16px;font-size:14px}
+  .monthgroup b{min-width:114px;font-size:17px}
+}
+
+
+/* V96: 主题与颜色收起为一行，点击右侧可展开全部配置 */
+.theme-panel-collapsible{padding:0!important;overflow:hidden}
+.theme-collapse-toggle{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.theme-collapse-toggle::-webkit-details-marker{display:none}
+.theme-collapse-toggle::marker{content:""}
+.theme-collapse-toggle:focus-visible{outline:2px solid var(--blue);outline-offset:-3px;border-radius:18px}
+.theme-collapse-action{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;color:var(--muted);font-weight:700;font-size:13px;padding:8px 11px;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 4px 12px rgba(18,38,82,.07),inset 0 1px 0 rgba(255,255,255,.5)}
+.theme-collapse-action svg{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.theme-collapse-label-close{display:none}
+.theme-collapse[open] .theme-collapse-label-open{display:none}
+.theme-collapse[open] .theme-collapse-label-close{display:inline}
+.theme-collapse[open] .theme-collapse-action svg{transform:rotate(180deg)}
+.theme-collapse-body{padding:0 22px 22px}
+.theme-collapse[open] .theme-collapse-body{animation:themeExpand .32s cubic-bezier(.22,1,.36,1) both}
+@keyframes themeExpand{from{opacity:.45;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.theme-collapse-toggle{padding:18px}.theme-collapse-body{padding:0 18px 18px}}
+@media(prefers-reduced-motion:reduce){.theme-collapse[open] .theme-collapse-body{animation:none}.theme-collapse-action svg{transition:none}}
+
+/* V100: 首页信用卡“还款”按钮——浅蓝立体，仅影响这个按钮 */
+.credit-summary .credit-repay-raised {
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:7px 12px;min-height:34px;border-radius:11px;
+  color:var(--blue);font-size:13px;font-weight:650;white-space:nowrap;
+  background:linear-gradient(180deg,#f6f9ff 0%,#e5efff 100%);
+  border:1px solid #d3e2ff;
+  box-shadow:0 5px 11px rgba(68,113,195,.13),inset 0 1px 0 rgba(255,255,255,.98),inset 0 -1px 0 rgba(109,153,225,.15);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.credit-summary .credit-repay-raised:hover {
+  transform:translateY(-1px);
+  box-shadow:0 8px 16px rgba(68,113,195,.18),inset 0 1px 0 #fff;
+}
+.credit-summary .credit-repay-raised:active {
+  transform:translateY(1px);
+  box-shadow:0 2px 6px rgba(68,113,195,.14),inset 0 2px 4px rgba(109,153,225,.11);
+}
+@media(max-width:450px){.credit-summary .credit-repay-raised{padding:6px 8px;min-height:32px;font-size:12px}}
 </style><style>
 .budget-preview-row{padding:13px 0;border-bottom:1px solid var(--line)}
 .budget-preview-row:last-child{border-bottom:0;padding-bottom:3px}
@@ -122,16 +211,414 @@
 @media(prefers-reduced-motion:reduce){.home-floating-drag,.home-floating-drag.home-settling{transition:none!important}}
 </style><style>
 .cloud-header{display:flex;align-items:center;gap:9px;justify-content:flex-end;flex-wrap:wrap}.cloud-status{font-size:12px;color:var(--muted);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cloud-settings{margin-bottom:18px}.cloud-settings-actions{display:flex;gap:9px;flex-wrap:wrap}.cloud-settings-actions .btn{font-size:13px}.cloud-settings-actions .btn:disabled{opacity:.5}.cloud-action-choices{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.cloud-action-choices .btn{flex:1;min-width:120px}.cloud-account-name{color:var(--blue);font-weight:750}.cloud-instructions{padding:12px;border-radius:12px;background:var(--bluewash);color:var(--text);margin-top:12px;font-size:13px;line-height:1.65}@media(max-width:800px){.topbar{align-items:flex-start;flex-direction:column}.cloud-header{justify-content:flex-start}.cloud-status{max-width:160px}}
-.app-build-label{display:inline-block;margin-top:8px;font-size:10px;opacity:.65;letter-spacing:.3px}</style></head>
+.app-build-label{display:inline-block;margin-top:8px;font-size:10px;opacity:.65;letter-spacing:.3px}</style><style id="mobile-liquid-glass-entrybar-v63">
+@media (max-width: 800px) {
+  .entrybar {
+    left: 16px;
+    right: 16px;
+    bottom: calc(74px + env(safe-area-inset-bottom));
+    height: 62px;
+    border-radius: 22px;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    color: #ffffff;
+    background: rgba(104,154,248,var(--mobile-glass-alpha,.32));
+    border: 1px solid rgba(255,255,255,.30);
+    box-shadow: 0 18px 40px rgba(34, 60, 125, .24), inset 0 1px 0 rgba(255,255,255,.32), inset 0 -1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(var(--mobile-glass-blur, 12px)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--mobile-glass-blur, 12px)) saturate(140%);
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .entrybar::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: 21px;
+    background: linear-gradient(135deg, rgba(255,255,255,.34), rgba(255,255,255,.10) 34%, rgba(104,154,248,.20) 72%, rgba(85,125,235,.30));
+    z-index: -2;
+    opacity: var(--mobile-glass-strength, .32);
+  }
+  .entrybar::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 4px;
+    height: 22px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,.52), rgba(255,255,255,.08));
+    opacity: var(--mobile-glass-sheen, .25);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .entrybar:hover {
+    box-shadow: 0 20px 44px rgba(34, 60, 125, .28), inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(255,255,255,.08);
+  }
+  .entrybar:active {
+    transform: scale(.985);
+    filter: brightness(.98);
+    box-shadow: 0 12px 28px rgba(34, 60, 125, .22), inset 0 1px 0 rgba(255,255,255,.28), inset 0 -1px 0 rgba(255,255,255,.06);
+  }
+  .entrybar-plus {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    font-size: 23px;
+    font-weight: 650;
+    color: #ffffff;
+    background: rgba(255,255,255,var(--mobile-glass-plus-alpha,.16));
+    border: 1px solid rgba(255,255,255,.26);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 6px 12px rgba(32, 56, 118, .16);
+    backdrop-filter: blur(var(--mobile-glass-plus-blur, 8px)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--mobile-glass-plus-blur, 8px)) saturate(140%);
+    flex: none;
+  }
+}
+  @media (max-width: 800px) {
+    html.mobile-glass-nearly-clear .entrybar {
+      color: #203354;
+      border-color: rgba(74,96,143,.20);
+      box-shadow: 0 5px 18px rgba(34,60,125,.07);
+    }
+    html.mobile-glass-nearly-clear .entrybar-plus {
+      color: #203354;
+      border-color: rgba(74,96,143,.18);
+      box-shadow: none;
+    }
+  }
+</style>
+<style id="mobile-liquid-glass-settings-v64">
+.glass-opacity-setting{margin:18px 0 2px;padding:16px 17px;border:1px solid var(--line);border-radius:16px;background:var(--bg)}
+.glass-opacity-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.glass-opacity-header b{font-size:14px;color:var(--text)}
+.glass-opacity-header p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+
+.glass-opacity-setting input[type=range]{width:100%;margin:16px 0 8px;accent-color:var(--blue);cursor:pointer}
+.glass-opacity-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+</style>
+<style id="mobile-liquid-glass-refraction-v66">
+@media(max-width:800px){
+ .entrybar{
+   --refract-power: .45;
+   --refract-amount: 7px;
+   border: 1px solid rgba(255,255,255,calc(.16 + var(--refract-power) * .42));
+   box-shadow: 0 12px 34px rgba(32,61,121,.12), inset 0 2px 1px rgba(255,255,255,calc(.12 + var(--refract-power) * .42)), inset 0 -3px 6px rgba(27,57,131,calc(var(--refract-power) * .18));
+ }
+ /* Transparent dome, light arcs, and a strong refractive rim, preserving legibility. */
+ .entrybar::before{
+   inset:0;
+   border-radius:inherit;
+   background:
+    radial-gradient(ellipse 130% 120% at 50% -60%,rgba(255,255,255,.72),transparent 64%),
+    linear-gradient(105deg,rgba(255,255,255,.16),transparent 35%,rgba(99,143,231,.18) 83%,rgba(255,255,255,.24));
+   box-shadow: inset 0 2px 3px rgba(255,255,255,.42),inset 0 -3px 6px rgba(37,76,152,.20);
+   opacity:var(--refract-power);
+   pointer-events:none;
+   z-index:0;
+ }
+ .entrybar::after{
+   left:6px;right:6px;top:3px;height:calc(100% - 6px);
+   border-radius:19px;
+   background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 22%,transparent 72%,rgba(51,96,191,.23));
+   border-top:1px solid rgba(255,255,255,.72);
+   border-bottom:1px solid rgba(61,110,201,.24);
+   opacity:var(--refract-power);
+   z-index:0;
+   pointer-events:none;
+ }
+ .entrybar>span{position:relative;z-index:1;pointer-events:none}
+ .entrybar:active{transform:scale(.982)}
+ /* Browsers that support SVG backdrop filters can deform the actual page behind the button. */
+ 
+ 
+}
+</style>
+
+<style id="mobile-liquid-glass-instagram-v67">
+/* iPhone-only: clear neutral lens instead of tinted blue blur. */
+@media (max-width: 800px) {
+  .entrybar, html.mobile-glass-nearly-clear .entrybar {
+    border-radius: 999px;
+    color: #121820;
+    background: rgba(255,255,255,calc(.03 + (1 - var(--mobile-glass-strength, .32)) * .02));
+    border: 1px solid rgba(255,255,255,calc(.48 + var(--refract-power,.45) * .30));
+    box-shadow:
+      0 11px 30px rgba(35,46,70,.12),
+      0 2px 8px rgba(35,46,70,.055),
+      inset 0 1.5px 1.5px rgba(255,255,255,.97),
+      inset 1.5px 0 3px rgba(255,255,255,.72),
+      inset -1.5px 0 3px rgba(255,255,255,.68),
+      inset 0 -1px 2px rgba(90,104,130,.13);
+    -webkit-backdrop-filter: blur(var(--mobile-glass-blur,0px)) saturate(120%);
+    backdrop-filter: blur(var(--mobile-glass-blur,0px)) saturate(120%);
+    overflow: hidden;
+  }
+  .entrybar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(100deg, rgba(255,255,255,.32), transparent 19%, transparent 78%,rgba(255,255,255,.39)),
+      radial-gradient(ellipse 70% 80% at 38% -20%,rgba(255,255,255,.52),transparent 72%),
+      linear-gradient(180deg,rgba(255,255,255,.20),transparent 24%,transparent 78%,rgba(135,148,170,.12));
+    opacity:calc(.35 + var(--refract-power,.45) * .65);
+    pointer-events:none;
+    z-index:0;
+    box-shadow:inset 0 2px 2px rgba(255,255,255,.82),inset 0 -3px 5px rgba(89,109,147,.09);
+  }
+  .entrybar::after {
+    content:'';
+    position:absolute;
+    inset:3px;
+    width:auto;
+    height:auto;
+    border-radius:999px;
+    background:transparent;
+    border-top:1px solid rgba(255,255,255,.77);
+    border-bottom:1px solid rgba(120,138,159,calc(var(--refract-power,.45) * .18));
+    opacity:1;
+    pointer-events:none;
+    z-index:0;
+  }
+  .entrybar>span{color:#121820;text-shadow:0 1px 0 rgba(255,255,255,.55);position:relative;z-index:1}
+  .entrybar .entrybar-plus,html.mobile-glass-nearly-clear .entrybar-plus {
+    border-radius:999px;
+    background:rgba(255,255,255,.25);
+    border:1px solid rgba(255,255,255,.67);
+    color:#121820;
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.92),0 2px 7px rgba(31,48,80,.09);
+    -webkit-backdrop-filter:blur(2px);
+    backdrop-filter:blur(2px);
+  }
+  .entrybar:active{transform:scale(.982);filter:none}
+}
+</style>
+
+<style id="v69-no-ghosting-safeguard">
+/* 修复 V68 文字重影：彻底禁用背景镜像。手机端保留清透玻璃、高光与响应。 */
+.glass-refract-viewport,.glass-refract-canvas,.glass-refract-content{display:none!important}
+@media(max-width:800px){
+ .entrybar{backdrop-filter:blur(var(--mobile-glass-blur,0px)) saturate(115%)!important;-webkit-backdrop-filter:blur(var(--mobile-glass-blur,0px)) saturate(115%)!important}
+ .entrybar>span{z-index:2}
+}
+</style>
+
+<style id="v70-optical-edge-lens">
+/* V70: 单层背景，无文字镜像。光学环只在胶囊内沿，中央保持清透。 */
+@media(max-width:800px){
+ .entrybar,html.mobile-glass-nearly-clear .entrybar{
+  isolation:isolate;
+  background:rgba(255,255,255,calc(.025 + var(--mobile-glass-alpha,.10) * .27))!important;
+  border:1px solid rgba(243,247,255,calc(.58 + var(--refract-power,.45) * .30))!important;
+  -webkit-backdrop-filter:blur(var(--mobile-glass-blur,0px)) saturate(115%)!important;
+  backdrop-filter:blur(var(--mobile-glass-blur,0px)) saturate(115%)!important;
+  box-shadow:0 13px 30px rgba(24,39,66,.10),0 3px 9px rgba(24,39,66,.045),
+    inset 0 1.5px 1px rgba(255,255,255,.88),inset 0 -1.5px 2px rgba(85,99,131,.13)!important;
+ }
+ .entrybar::before{
+  inset:0!important;border-radius:inherit!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.56),transparent 17%,transparent 79%,rgba(83,104,142,.17)),
+    linear-gradient(95deg,rgba(255,255,255,.40),transparent 9%,transparent 91%,rgba(255,255,255,.40))!important;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  -webkit-mask-composite:xor!important;mask-composite:exclude!important;
+  padding:calc(2px + var(--refract-power,.45) * 5px)!important;
+  opacity:calc(.28 + var(--refract-power,.45) * .72)!important;
+  box-shadow:none!important;pointer-events:none!important;z-index:0!important;
+ }
+ .entrybar::after{
+  inset:2px!important;width:auto!important;height:auto!important;border-radius:inherit!important;
+  border:0!important;
+  background:radial-gradient(ellipse 92% 75% at 50% -16%,rgba(255,255,255,.47),transparent 67%),
+    linear-gradient(180deg,rgba(255,255,255,.10),transparent 22%,transparent 80%,rgba(255,255,255,.09))!important;
+  opacity:calc(.12 + var(--refract-power,.45) * .46)!important;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;
+  -webkit-mask-composite:xor!important;mask-composite:exclude!important;
+  padding:calc(3px + var(--refract-power,.45) * 7px)!important;
+  pointer-events:none!important;z-index:0!important;
+ }
+ .entrybar>span{position:relative;z-index:2}
+}
+</style>
+<style id="glass-opacity-five-stops-v72">
+.glass-opacity-scale{display:flex;justify-content:space-between;align-items:center;gap:0;white-space:nowrap}
+.glass-opacity-scale span{font-size:11px}
+.glass-opacity-scale span:first-child{text-align:left}
+.glass-opacity-scale span:last-child{text-align:right}
+</style>
+<style id="glass-opacity-smooth-v75">
+.glass-smooth-slider{position:relative;height:42px;margin:8px 8px 4px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;outline:none}
+.glass-smooth-track{position:absolute;left:10px;right:10px;top:17px;height:7px;border-radius:99px;background:color-mix(in srgb,var(--blue) 12%,#c5cfe1);overflow:hidden}
+.glass-smooth-fill{height:100%;width:var(--glass-slider-percent,75%);border-radius:99px;background:var(--blue);will-change:width}
+.glass-smooth-thumb{position:absolute;top:20.5px;left:calc(10px + (100% - 20px) * .75);width:22px;height:22px;border:2px solid var(--blue);border-radius:50%;background:var(--blue);box-shadow:0 1px 5px rgba(20,38,85,.12);transform:translate(-50%,-50%);will-change:left,transform}
+.glass-smooth-slider.dragging .glass-smooth-thumb{transform:translate(-50%,-50%) scale(1.07)}
+.glass-smooth-slider:focus-visible .glass-smooth-thumb{outline:3px solid var(--bluewash);outline-offset:3px}
+</style>
+
+<style id="v77-clear-glass-thumb">
+/* V77: 将液态玻璃滑块圆球改成更通透的透明玻璃感，去掉明显蓝色实体填充。 */
+.glass-smooth-thumb{
+ width:28px;height:28px;border-radius:50%;border:1px solid rgba(255,255,255,.78);
+ background:radial-gradient(circle at 34% 22%,rgba(255,255,255,.72) 0%,rgba(255,255,255,.28) 26%,rgba(255,255,255,.12) 58%,rgba(255,255,255,.08) 100%);
+ -webkit-backdrop-filter:blur(11px) saturate(150%);backdrop-filter:blur(11px) saturate(150%);
+ box-shadow:0 4px 14px rgba(115,148,208,.16),inset 0 1px 2px rgba(255,255,255,.9),inset 0 -1px 5px rgba(255,255,255,.22),0 0 0 1px rgba(255,255,255,.18);
+ transform:translate(-50%,-50%) scale(1);transition:transform .42s cubic-bezier(.22,.86,.24,1),box-shadow .42s ease,background .42s ease,border-color .42s ease;
+ isolation:isolate;overflow:visible;
+}
+.glass-smooth-thumb::before{content:"";position:absolute;inset:2px;border-radius:inherit;pointer-events:none;
+ background:radial-gradient(ellipse 70% 34% at 38% 18%,rgba(255,255,255,.95),transparent 82%),linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,0) 48%);
+ opacity:.95;transition:opacity .32s ease;
+}
+.glass-smooth-thumb::after{content:"";position:absolute;inset:-5px;border-radius:inherit;pointer-events:none;
+ border:1px solid rgba(255,255,255,.22);box-shadow:0 0 0 2px rgba(255,255,255,.06);opacity:0;transform:scale(.88);
+ transition:transform .4s cubic-bezier(.22,.86,.24,1),opacity .28s ease;
+}
+.glass-smooth-slider.dragging .glass-smooth-thumb{
+ transform:translate(-50%,-50%) scale(1.32);
+ background:radial-gradient(circle at 34% 21%,rgba(255,255,255,.82) 0%,rgba(255,255,255,.36) 22%,rgba(255,255,255,.16) 62%,rgba(255,255,255,.11) 100%);
+ border-color:rgba(255,255,255,.92);
+ box-shadow:0 8px 22px rgba(107,143,207,.18),inset 0 2px 3px rgba(255,255,255,.98),inset 0 -2px 7px rgba(255,255,255,.18),0 0 0 3px rgba(255,255,255,.07);
+}
+.glass-smooth-slider.dragging .glass-smooth-thumb::after{opacity:1;transform:scale(1.18)}
+/* V78：松手后直接从放大状态连续缩回原尺寸，不再经历 1.32 → 1.14 → 1 的两次突变。 */
+.glass-smooth-slider.settling .glass-smooth-thumb{
+ transform:translate(-50%,-50%) scale(1);
+ transition:transform .78s cubic-bezier(.18,.82,.20,1),box-shadow .70s ease,background .70s ease,border-color .70s ease;
+}
+.glass-smooth-slider.settling .glass-smooth-thumb::after{
+ opacity:0;transform:scale(.88);
+ transition:transform .72s cubic-bezier(.18,.82,.20,1),opacity .60s ease;
+}
+@media(prefers-reduced-motion:reduce){.glass-smooth-thumb,.glass-smooth-thumb::after{transition:none!important}}
+</style>
+
+
+<style id="v79-align-glass-slider-labels">
+/* 与圆球采用同一条轨道中心线：滑块 margin 8px + 内边距 10px = 18px。 */
+.glass-opacity-scale{position:relative;display:block;height:19px;margin-left:18px;margin-right:18px;white-space:nowrap}
+.glass-opacity-scale span{position:absolute;top:0;transform:translateX(-50%);text-align:center;line-height:19px}
+.glass-opacity-scale span:nth-child(1){left:0}
+.glass-opacity-scale span:nth-child(2){left:25%}
+.glass-opacity-scale span:nth-child(3){left:50%}
+.glass-opacity-scale span:nth-child(4){left:75%}
+.glass-opacity-scale span:nth-child(5){left:100%}
+</style>
+<style id="v82-dashboard-header-spacing">
+/* 右上角模块操作按钮占据独立空间，防止遮挡文字链接。 */
+.home-board .cardhead,
+.home-board .credit-head { padding-right: 42px; }
+.home-board .credit-head { min-width: 0; }
+.home-board .credit-head .link { position: relative; z-index: 1; }
+</style>
+<style id="v83-lowered-dashboard-handles">
+/* 首页模块右上角菜单按钮统一下移 6px，与标题、操作文字更好地垂直对齐。 */
+.home-board .home-drag-handle { top: 18px; }
+@media (max-width: 800px) {
+  .home-board .home-drag-handle { top: 16px; }
+}
+</style>
+
+<style id="v84-ios-module-switches">
+/* 首页模块管理：iOS 设置风格开关；蓝色启用，灰色停用。 */
+.home-manage-row .ios-visibility-switch{position:relative;display:block;flex:0 0 52px;width:52px;min-width:52px;height:32px;padding:0;border:0;border-radius:999px;background:#d7dce5;box-shadow:inset 0 0 0 1px rgba(20,35,58,.045);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .62s cubic-bezier(.22,.68,.16,1)}
+.home-manage-row .ios-visibility-switch.is-on{background:var(--blue)}
+.home-manage-row .ios-switch-knob{position:absolute;top:2px;left:2px;width:28px;height:28px;border-radius:50%;background:white;box-shadow:0 1px 4px rgba(18,31,58,.2);transform:translateX(0);transition:none}
+.home-manage-row .ios-visibility-switch.is-on .ios-switch-knob{transform:translateX(20px)}
+.home-manage-row .ios-visibility-switch:active .ios-switch-knob{box-shadow:0 1px 7px rgba(18,31,58,.26)}
+.home-manage-row .ios-visibility-switch:focus-visible{outline:3px solid var(--bluewash);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.home-manage-row .ios-visibility-switch,.home-manage-row .ios-switch-knob{transition:none}}
+</style>
+<style id="v88-settings-only-cloud">.topbar .cloud-header{display:none!important}.cloud-settings-actions [hidden]{display:none!important}</style>
+<style id="v89-cloud-sync-time-style">
+.cloud-last-sync{color:var(--muted);font-size:12px;white-space:nowrap;line-height:1.5;align-self:center}
+.cloud-last-sync[hidden]{display:none!important}
+@media(max-width:800px){.cloud-last-sync{font-size:11px}}
+</style>
+
+<style id="v92-settings-card-spacing">
+/* 设置页：将首页模块管理与下方主题与颜色卡片分开 */
+#settings .home-settings-card{margin-bottom:18px;}
+</style>
+<style id="v94-raised-settings-buttons">
+/* 只增强设置页面操作按钮的层次感，不改变其他页面和液态玻璃浮动按钮 */
+#settings button.btn:not(:disabled){
+  border:1px solid color-mix(in srgb,var(--line) 75%,#b4c4dc);
+  border-radius:14px;
+  background:linear-gradient(180deg,#fff 0%,color-mix(in srgb,var(--card) 88%,#dae4f5) 100%);
+  color:var(--text);
+  box-shadow:0 5px 12px rgba(28,45,82,.095),0 1px 2px rgba(28,45,82,.05),inset 0 1px 0 rgba(255,255,255,.96);
+  transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s cubic-bezier(.2,.8,.2,1),background .24s ease;
+}
+#settings button.btn.primary:not(:disabled){
+  background:linear-gradient(180deg,color-mix(in srgb,var(--blue) 78%,#fff) 0%,var(--blue) 57%,color-mix(in srgb,var(--blue) 86%,#203d8a) 100%);
+  color:#fff;
+  border-color:color-mix(in srgb,var(--blue) 85%,#31569a);
+  box-shadow:0 7px 16px color-mix(in srgb,var(--blue) 25%,transparent),inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(15,35,85,.15);
+}
+@media (hover:hover){
+  #settings button.btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 9px 18px rgba(28,45,82,.14),inset 0 1px 0 rgba(255,255,255,.95)}
+  #settings button.btn.primary:not(:disabled):hover{box-shadow:0 10px 20px color-mix(in srgb,var(--blue) 31%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}
+}
+#settings button.btn:not(:disabled):active{transform:translateY(1px) scale(.985);box-shadow:0 2px 6px rgba(28,45,82,.08),inset 0 1px 4px rgba(28,45,82,.07)}
+#settings button.btn.primary:not(:disabled):active{box-shadow:0 2px 8px color-mix(in srgb,var(--blue) 24%,transparent),inset 0 2px 5px rgba(20,40,90,.17)}
+</style>
+<style id="v97-theme-toggle-match-module-button">
+/* 主题展开按钮与“管理模块”使用同一套立体按钮视觉规范 */
+#settings .theme-collapse-action{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:10px 14px;
+  min-height:43px;
+  box-sizing:border-box;
+  border:1px solid color-mix(in srgb,var(--line) 75%,#b4c4dc);
+  border-radius:14px;
+  background:linear-gradient(180deg,#fff 0%,color-mix(in srgb,var(--card) 88%,#dae4f5) 100%);
+  color:var(--text);
+  font-size:16px;
+  font-weight:750;
+  line-height:1.3;
+  box-shadow:0 5px 12px rgba(28,45,82,.095),0 1px 2px rgba(28,45,82,.05),inset 0 1px 0 rgba(255,255,255,.96);
+  transition:transform .24s cubic-bezier(.2,.8,.2,1),box-shadow .24s cubic-bezier(.2,.8,.2,1),background .24s ease;
+}
+#settings .theme-collapse-action svg{width:17px;height:17px;flex-shrink:0;color:var(--text)}
+@media(hover:hover){#settings .theme-collapse-toggle:hover .theme-collapse-action{transform:translateY(-2px);box-shadow:0 9px 18px rgba(28,45,82,.14),inset 0 1px 0 rgba(255,255,255,.95)}}
+#settings .theme-collapse-toggle:active .theme-collapse-action{transform:translateY(1px) scale(.985);box-shadow:0 2px 6px rgba(28,45,82,.08),inset 0 1px 4px rgba(28,45,82,.07)}
+</style>
+
+<style id="v99-home-modules-inline-accordion">
+/* 首页模块管理与主题设置一致的内嵌折叠面板 */
+#settings .home-panel-collapsible{padding:0!important;overflow:hidden}
+#settings .home-panel-collapsible .home-manage-list{margin:0;gap:12px}
+#settings .home-panel-collapsible .home-manage-row{min-height:58px;padding:11px 16px}
+#settings .home-panel-collapsible .home-manage-row > span{font-weight:750}
+#settings .home-panel-collapsible .theme-collapse-body{padding-top:0}
+</style>
+</head>
 <body>
-<div class="app"><aside class="sidebar"><button type="button" class="logo brand-home-link" aria-label="返回财务概览首页" title="返回首页" onclick="switchTab('dashboard')"><svg class="brand-symbol" viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="62" height="62" rx="16" fill="#fff" stroke="#e6ebf5" stroke-width="1.2"/><path d="M16 19.5c0-4.5 3.1-7.9 7.7-8.5L45 8.5c2.1-.3 3.8 1.1 4.2 3.2l1.2 7.8" fill="none" stroke="var(--blue)" stroke-width="4.2" stroke-linecap="round" opacity=".55"/><path d="M14 22c0-3.9 3.1-7 7-7h28c3.9 0 7 3.1 7 7v27c0 3.9-3.1 7-7 7H21c-3.9 0-7-3.1-7-7Z" fill="var(--blue)"/><path d="M17 22c0-2.6 2-4.5 4.5-4.5H48" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/><path d="M29 28l5 6 5-6M34 34v12M28 37h12M28 41h12" fill="none" stroke="#fff" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M46.5 31H58v16H46.5c-3.7 0-6.5-2.8-6.5-6.5V37.5c0-3.7 2.8-6.5 6.5-6.5Z" fill="var(--bluewash)" stroke="var(--blue)" stroke-width="1.8"/><circle cx="48" cy="39" r="3" fill="var(--blue)"/></svg><span class="brand-wordmark">记一笔</span></button><nav id="sideNav"></nav><div class="sidebar-hint">每一笔，都有迹可循。<br><span id="sidebarCloudHint">数据仅保存在当前浏览器。</span><br><span class="app-build-label">V62 · 云同步版</span></div></aside><main class="main"><header class="topbar"><div><div class="eyebrow" id="greeting"></div><h1 class="title" id="pageTitle">财务概览</h1></div><div class="cloud-header"><span class="cloud-status" id="cloudStatus">☁ 未登录 · 仅本机</span><button class="btn small" id="cloudLoginBtn" type="button" onclick="window.ledgerCloudLogin?.()">使用 Google 登录</button><button class="btn small" id="cloudLogoutBtn" type="button" hidden onclick="window.ledgerCloudLogout?.()">退出登录</button></div></header>
-<section class="section show" id="dashboard"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button><button class="btn small home-manage-btn" type="button" onclick="openHomeManage()">⚙ 管理模块</button></div><div class="home-board" id="homeBoard"><div class="hero home-module home-wide" data-home-module="overview"><button aria-label="按住拖动收支总览模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="hero-dual"><div class="hero-panel"><div class="hero-currency">🇪🇺 欧元 EUR</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceEUR">€0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeEUR"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseEUR"></strong></div></div></div><div class="hero-panel right"><div class="hero-currency">🇨🇳 人民币 CNY</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceCNY">¥0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeCNY"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseCNY"></strong></div></div></div></div></div><div class="card credit-summary home-module home-wide" data-home-module="credit" id="creditSummary" style="display:none"><button aria-label="按住拖动信用卡待还模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button></div><div class="card home-module" data-home-module="categories"><button aria-label="按住拖动支出分类模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">支出分类</span><span class="subtle">本月</span></div><div class="stats"><div class="donut" id="donut"><div class="donut-text"><div class="subtle">总支出</div><b id="donutAmount"></b></div></div><div class="legend" id="legend"></div></div></div><div class="card home-module" data-home-module="trend"><button aria-label="按住拖动收支趋势模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead trend-head"><span class="cardtitle">收支趋势</span><div class="trend-legend"><span><span class="dot" style="background:#81dec4"></span>收入</span><span><span class="dot" style="background:#707fe5"></span>支出</span></div></div><div aria-label="趋势统计时间范围" class="trend-switch" role="group"><button data-range="1" onclick="setTrendRange(1)" type="button">1个月</button><button data-range="3" onclick="setTrendRange(3)" type="button">3个月</button><button data-range="6" onclick="setTrendRange(6)" type="button">6个月</button><button data-range="12" onclick="setTrendRange(12)" type="button">1年</button></div><div class="bar-chart" id="trend"></div></div><div class="card home-module" data-home-module="recent"><button aria-label="按住拖动最近交易模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">最近交易</span><button class="link" onclick="switchTab('transactions')">查看全部 →</button></div><div class="list" id="recentList"></div></div><div class="card home-module" data-home-module="budget"><button aria-label="按住拖动本月预算模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">本月预算</span><button class="link" onclick="switchTab('budgets')">管理预算 →</button></div><div id="budgetPreview"></div></div></div></section>
+<svg class="glass-optics-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
+ <defs>
+  <filter id="glass-optic-refraction-v66" x="-5%" y="-30%" width="110%" height="160%" color-interpolation-filters="sRGB">
+   <feTurbulence type="fractalNoise" baseFrequency="0.006 0.045" numOctaves="1" seed="4" result="noise"/>
+   <feGaussianBlur in="noise" stdDeviation="7" result="softNoise"/>
+   <feDisplacementMap in="SourceGraphic" in2="softNoise" scale="7" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+ </defs>
+</svg>
+
+<div class="app"><aside class="sidebar"><button type="button" class="logo brand-home-link" aria-label="返回财务概览首页" title="返回首页" onclick="switchTab('dashboard')"><svg class="brand-symbol" viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="62" height="62" rx="16" fill="#fff" stroke="#e6ebf5" stroke-width="1.2"/><path d="M16 19.5c0-4.5 3.1-7.9 7.7-8.5L45 8.5c2.1-.3 3.8 1.1 4.2 3.2l1.2 7.8" fill="none" stroke="var(--blue)" stroke-width="4.2" stroke-linecap="round" opacity=".55"/><path d="M14 22c0-3.9 3.1-7 7-7h28c3.9 0 7 3.1 7 7v27c0 3.9-3.1 7-7 7H21c-3.9 0-7-3.1-7-7Z" fill="var(--blue)"/><path d="M17 22c0-2.6 2-4.5 4.5-4.5H48" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/><path d="M29 28l5 6 5-6M34 34v12M28 37h12M28 41h12" fill="none" stroke="#fff" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M46.5 31H58v16H46.5c-3.7 0-6.5-2.8-6.5-6.5V37.5c0-3.7 2.8-6.5 6.5-6.5Z" fill="var(--bluewash)" stroke="var(--blue)" stroke-width="1.8"/><circle cx="48" cy="39" r="3" fill="var(--blue)"/></svg><span class="brand-wordmark">记一笔</span></button><nav id="sideNav"></nav><div class="sidebar-hint">每一笔，都有迹可循。<br><span id="sidebarCloudHint">数据仅保存在当前浏览器。</span><br><span class="app-build-label">V89 · 同步时间</span></div></aside><main class="main"><header class="topbar"><div><div class="eyebrow" id="greeting"></div><h1 class="title" id="pageTitle">财务概览</h1></div><div class="cloud-header" hidden aria-hidden="true"><span class="cloud-status" id="cloudStatus">☁ 未登录 · 仅本机</span><button class="btn small" id="cloudLoginBtn" type="button" onclick="window.ledgerCloudLogin?.()">使用 Google 登录</button><button class="btn small" id="cloudLogoutBtn" type="button" hidden onclick="window.ledgerCloudLogout?.()">退出登录</button></div></header>
+<section class="section show" id="dashboard"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="home-board" id="homeBoard"><div class="hero home-module home-wide" data-home-module="overview"><button aria-label="按住拖动收支总览模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="hero-dual"><div class="hero-panel"><div class="hero-currency">🇪🇺 欧元 EUR</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceEUR">€0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeEUR"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseEUR"></strong></div></div></div><div class="hero-panel right"><div class="hero-currency">🇨🇳 人民币 CNY</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceCNY">¥0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeCNY"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseCNY"></strong></div></div></div></div></div><div class="card credit-summary home-module home-wide" data-home-module="credit" id="creditSummary" style="display:none"><button aria-label="按住拖动信用卡待还模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button></div><div class="card home-module" data-home-module="categories"><button aria-label="按住拖动支出分类模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">支出分类</span><span class="subtle">本月</span></div><div class="stats"><div class="donut" id="donut"><div class="donut-text"><div class="subtle">总支出</div><b id="donutAmount"></b></div></div><div class="legend" id="legend"></div></div></div><div class="card home-module" data-home-module="trend"><button aria-label="按住拖动收支趋势模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead trend-head"><span class="cardtitle">收支趋势</span><div class="trend-legend"><span><span class="dot" style="background:#81dec4"></span>收入</span><span><span class="dot" style="background:#707fe5"></span>支出</span></div></div><div aria-label="趋势统计时间范围" class="trend-switch" role="group"><button data-range="1" onclick="setTrendRange(1)" type="button">1个月</button><button data-range="3" onclick="setTrendRange(3)" type="button">3个月</button><button data-range="6" onclick="setTrendRange(6)" type="button">6个月</button><button data-range="12" onclick="setTrendRange(12)" type="button">1年</button></div><div class="bar-chart" id="trend"></div></div><div class="card home-module" data-home-module="recent"><button aria-label="按住拖动最近交易模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">最近交易</span><button class="link" onclick="switchTab('transactions')">查看全部</button></div><div class="list" id="recentList"></div></div><div class="card home-module" data-home-module="budget"><button aria-label="按住拖动本月预算模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">本月预算</span><button class="link" onclick="switchTab('budgets')">管理预算</button></div><div id="budgetPreview"></div></div></div></section>
 <section id="transactions" class="section"><div class="toolbar"><input class="field" id="searchTx" placeholder="🔎 搜索备注、分类或商户…" oninput="renderTransactions()"><select class="select" id="txTypeFilter" onchange="renderTransactions()"><option value="all">全部类型</option><option value="expense">支出</option><option value="income">收入</option><option value="repayment">信用卡还款</option></select><select class="select" id="txAccountFilter" onchange="renderTransactions()"></select><button class="btn small" id="allMonthsBtn" onclick="toggleAllMonths()">当前月份</button></div><div class="card"><div class="cardhead"><span class="cardtitle">交易明细</span><span class="subtle" id="txCount"></span></div><div id="txList"></div></div></section>
 <section id="calendar" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="card"><div class="calendar" id="calGrid"></div></div><div class="card" style="margin-top:17px"><div class="cardhead"><span class="cardtitle" id="calDayTitle">当日明细</span><button class="link" onclick="openTransaction(selectedDay)">＋ 添加</button></div><div id="calDayList"></div></div></section>
 <section id="budgets" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button><button class="btn primary" onclick="openBudget()">＋ 设置预算</button></div><div class="card"><div class="cardhead"><span class="cardtitle">每月预算</span><span class="subtle">预算设置适用于所有月份</span></div><div id="budgetList"></div></div></section>
 <section id="accounts" class="section"><div class="toolbar"><button class="btn primary" onclick="openAccount()">＋ 添加账户</button></div><p class="smallnote" style="margin:0 0 12px">按住右侧 ☰ 拖动付款/收款方式，松手自动保存顺序。</p><div class="accountgrid" id="accountGrid"></div><p class="smallnote">每个付款/收款方式以自身币种保留余额。</p><p class="smallnote" style="margin-top:17px">提示：按住卡片右上角 ☰ 拖动可调整付款/收款方式的显示顺序。删除已有交易的方式前，须先调整相关交易。</p></section>
-<section id="reports" class="section"><p class="smallnote" style="margin-top:0">统计报表中的不同币种金额按账本已有汇率折算为显示货币；欧元和人民币的原始收支请查看首页双币种总览。</p><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="accountgrid"><div class="card"><div class="subtle">本月收入</div><h2 id="repIncome" class="green"></h2></div><div class="card"><div class="subtle">本月支出</div><h2 id="repExpense" class="red"></h2></div></div><div class="grid"><div class="card"><div class="cardhead"><span class="cardtitle">支出排行</span></div><div id="expenseRank"></div></div><div class="card"><div class="cardhead"><span class="cardtitle">收入来源</span></div><div id="incomeRank"></div></div></div><div class="card" style="margin-top:18px"><div class="cardhead"><span class="cardtitle">每日收支</span></div><div id="dailyReport"></div></div></section>
-<section id="settings" class="section"><div class="card cloud-settings"><div class="cardhead"><span class="cardtitle">☁️ Google 账号与云同步</span><span class="subtle" id="cloudSettingsStatus">未登录</span></div><p class="smallnote">登录 Google 后，将交易、账户、预算、信用卡和自定义分类同步到你自己的云端账本。第一次登录时可选择上传本机数据或使用云端数据。</p><div class="cloud-settings-actions"><button class="btn primary" type="button" onclick="window.ledgerCloudLogin?.()">Google 登录</button><button class="btn" type="button" onclick="window.ledgerCloudSyncNow?.()">立即同步</button><button class="btn" type="button" onclick="window.ledgerCloudLogout?.()">退出登录</button></div><p class="smallnote" id="cloudDetail">离线时保留本机记录；重新联网后尝试同步。登录前建议先导出 JSON 备份。</p></div><div class="card theme-panel"><div class="cardhead"><span class="cardtitle">🎨 主题与颜色</span><span class="subtle">自动保存</span></div><p class="smallnote">选择喜欢的预设主题，或逐项自定义界面配色。修改会立即生效，保存在当前账本中。</p><div id="themePresets" class="theme-grid"></div><div class="spread" style="margin:14px 0 8px"><b>细分颜色 · 自定义</b><span class="subtle" id="themeStatus"></span></div><div id="themeColorEditor" class="theme-color-grid"></div><div class="theme-actions"><button class="btn" onclick="resetThemeColors()">恢复当前主题默认颜色</button><button class="btn" onclick="pickTheme('classic')">恢复经典主题</button></div></div><div class="card"><div class="cardhead"><span class="cardtitle">偏好设置</span></div><div class="settings-row"><div><b>导出 JSON 备份</b><p>包含全部交易、账户、预算和设置，可再次导入</p></div><button class="btn" onclick="exportJSON()">导出 JSON</button></div><div class="settings-row"><div><b>导出 CSV 明细</b><p>可用 Excel 打开，适合进一步统计</p></div><button class="btn" onclick="exportCSV()">导出 CSV</button></div><div class="settings-row"><div><b>导入 JSON 备份</b><p>将覆盖当前全部记账数据，请先备份</p></div><button class="btn" onclick="document.getElementById('fileImport').click()">导入文件</button><input id="fileImport" type="file" accept=".json,application/json" hidden onchange="importJSON(event)"></div><div class="settings-row"><div><b>分类管理</b><p>新增、删除、调整收入和支出分类，支持商家子分类</p></div><button class="btn" onclick="openCategoryManager('expense')">管理分类</button></div><div class="settings-row"><div><b>清空所有数据</b><p>不可撤销，操作前请先备份</p></div><button class="btn" style="color:var(--red)" onclick="wipeData()">全部清空</button></div></div><div class="mutedbox" style="margin-top:18px">🔒 隐私说明：未登录时数据存放在当前浏览器；登录 Google 并完成首次账本选择后，账本会同步至 Firebase Firestore。云端使用 Google 账号身份和数据库安全规则保护访问；此版本未实现端到端加密。离线修改先保存在本机，联网后同步。请定期导出 JSON 备份。<br>⚠️ 云同步需要联网、Firebase 配置和正确的 Firestore 安全规则；本版本不具备自动汇率或自动读取银行账单功能。</div></section></main></div>
+<section id="reports" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="accountgrid"><div class="card"><div class="subtle">本月收入</div><h2 id="repIncome" class="green"></h2></div><div class="card"><div class="subtle">本月支出</div><h2 id="repExpense" class="red"></h2></div></div><div class="grid"><div class="card"><div class="cardhead"><span class="cardtitle">支出排行</span></div><div id="expenseRank"></div></div><div class="card"><div class="cardhead"><span class="cardtitle">收入来源</span></div><div id="incomeRank"></div></div></div><div class="card" style="margin-top:18px"><div class="cardhead"><span class="cardtitle">每日收支</span></div><div id="dailyReport"></div></div></section>
+<section id="settings" class="section"><div class="card cloud-settings"><div class="cardhead"><span class="cardtitle">☁️ Google 账号与云同步</span><span class="subtle" id="cloudSettingsStatus">未登录</span></div><div class="cloud-settings-actions"><button class="btn primary" id="cloudSettingsLoginBtn" type="button" onclick="window.ledgerCloudLogin?.()">Google 登录</button><button class="btn" id="cloudSettingsSyncBtn" type="button" onclick="window.ledgerCloudSyncNow?.()">立即同步</button><span class="cloud-last-sync" id="cloudLastSync" aria-live="polite" hidden></span><button class="btn" id="cloudSettingsLogoutBtn" type="button" onclick="window.ledgerCloudLogout?.()" hidden>退出登录</button></div></div><div class="card home-settings-card home-panel-collapsible"><details id="homeSettingsCollapse" class="theme-collapse"><summary class="theme-collapse-toggle"><span class="cardtitle">首页模块管理</span><span class="theme-collapse-action"><span class="theme-collapse-label-open">展开设置</span><span class="theme-collapse-label-close">收起设置</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary><div class="theme-collapse-body"><div class="home-manage-list"><div class="home-manage-row"><span>收支总览</span><button type="button" class="ios-visibility-switch is-on" role="switch" aria-checked="true" aria-label="收支总览停用" onclick="toggleHomeManageSwitch(this,'overview')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div><div class="home-manage-row"><span>信用卡待还</span><button type="button" class="ios-visibility-switch is-on" role="switch" aria-checked="true" aria-label="信用卡待还停用" onclick="toggleHomeManageSwitch(this,'credit')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div><div class="home-manage-row"><span>支出分类</span><button type="button" class="ios-visibility-switch is-on" role="switch" aria-checked="true" aria-label="支出分类停用" onclick="toggleHomeManageSwitch(this,'categories')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div><div class="home-manage-row"><span>收支趋势</span><button type="button" class="ios-visibility-switch is-on" role="switch" aria-checked="true" aria-label="收支趋势停用" onclick="toggleHomeManageSwitch(this,'trend')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div><div class="home-manage-row"><span>最近交易</span><button type="button" class="ios-visibility-switch is-on" role="switch" aria-checked="true" aria-label="最近交易停用" onclick="toggleHomeManageSwitch(this,'recent')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div><div class="home-manage-row"><span>本月预算</span><button type="button" class="ios-visibility-switch is-on" role="switch" aria-checked="true" aria-label="本月预算停用" onclick="toggleHomeManageSwitch(this,'budget')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div></div></div></details></div><div class="card theme-panel theme-panel-collapsible"><details class="theme-collapse" id="themeCollapse"><summary class="theme-collapse-toggle"><span class="cardtitle">🎨 主题与颜色</span><span class="theme-collapse-action"><span class="theme-collapse-label-open">展开设置</span><span class="theme-collapse-label-close">收起设置</span><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary><div class="theme-collapse-body"><p class="smallnote">选择喜欢的预设主题，或逐项自定义界面配色。修改会立即生效，保存在当前账本中。</p><div id="themePresets" class="theme-grid"></div><div class="spread" style="margin:14px 0 8px"><b>细分颜色 · 自定义</b></div><div id="themeColorEditor" class="theme-color-grid"></div>
+<div class="glass-opacity-setting"><div class="glass-opacity-header"><div><b>液态玻璃透明度</b></div></div><div id="glassOpacitySlider" class="glass-smooth-slider" role="slider" tabindex="0" aria-label="液态玻璃透明度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75"><div class="glass-smooth-track"><div class="glass-smooth-fill"></div></div><div class="glass-smooth-thumb"></div></div><div class="glass-opacity-scale"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div></div>
+<div class="theme-actions"><button class="btn" onclick="resetThemeColors()">恢复当前主题默认颜色</button><button class="btn" onclick="pickTheme('classic')">恢复经典主题</button></div></div></details></div><div class="card"><div class="cardhead"><span class="cardtitle">偏好设置</span></div><div class="settings-row"><div><b>导出 JSON 备份</b><p>包含全部交易、账户、预算和设置，可再次导入</p></div><button class="btn" onclick="exportJSON()">导出 JSON</button></div><div class="settings-row"><div><b>导入 JSON 备份</b><p>将覆盖当前全部记账数据，请先备份</p></div><button class="btn" onclick="document.getElementById('fileImport').click()">导入 JSON</button><input id="fileImport" type="file" accept=".json,application/json" hidden onchange="importJSON(event)"></div><div class="settings-row"><div><b>导出 CSV 明细</b><p>可用 Excel 打开，适合进一步统计</p></div><button class="btn" onclick="exportCSV()">导出 CSV</button></div><div class="settings-row"><div><b>分类管理</b><p>新增、删除、调整收入和支出分类，支持商家子分类</p></div><button class="btn" onclick="openCategoryManager('expense')">管理分类</button></div><div class="settings-row"><div><b>清空所有数据</b><p>不可撤销，操作前请先备份</p></div><button class="btn" style="color:var(--red)" onclick="wipeData()">全部清空</button></div></div><div class="mutedbox" style="margin-top:18px">🔒 隐私说明：未登录时数据存放在当前浏览器；登录 Google 并完成首次账本选择后，账本会同步至 Firebase Firestore。云端使用 Google 账号身份和数据库安全规则保护访问；此版本未实现端到端加密。离线修改先保存在本机，联网后同步。请定期导出 JSON 备份。<br>⚠️ 云同步需要联网、Firebase 配置和正确的 Firestore 安全规则；本版本不具备自动汇率或自动读取银行账单功能。</div></section></main></div>
 <button class="entrybar" onclick="openTransaction()" aria-label="记一笔"><span class="entrybar-plus" aria-hidden="true">＋</span><span>记一笔</span></button><nav class="bottomnav" id="bottomNav"></nav><div class="modalwrap" id="modalWrap" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalContent" role="dialog" aria-modal="true"></div></div><div class="dialogwrap" id="dialogWrap" onclick="if(event.target===this)closeDialog()"><div class="dialogpanel" id="dialogContent" role="dialog" aria-modal="true"></div></div><div class="toast" id="toast"></div>
 <script>
 'use strict';
@@ -232,8 +719,132 @@ const THEME_LIST=[
 ];
 function themeInfo(){return THEME_LIST.find(x=>x[0]===(data.theme?.name||'classic'))||THEME_LIST[0]}
 function themeColors(){return {...themeInfo()[2],...(data.theme?.colors||{})}}
-function applyTheme(){const colors=themeColors(),root=document.documentElement.style;for(const [key,value] of Object.entries(colors)){root.setProperty(key==='heroStart'?'--hero-start':key==='heroEnd'?'--hero-end':'--'+key,value)}document.querySelector('meta[name="theme-color"]')?.setAttribute('content',colors.navy);}
-function renderThemeSettings(){const grid=document.getElementById('themePresets'),editor=document.getElementById('themeColorEditor');if(!grid||!editor)return;const current=themeInfo()[0],colors=themeColors();grid.innerHTML=THEME_LIST.map(([key,title,values])=>`<button type="button" class="theme-option ${current===key?'selected':''}" onclick="pickTheme('${key}')"><span class="theme-dots">${[values.bg,values.blue,values.heroEnd].map(v=>`<i style="background:${v}"></i>`).join('')}</span>${title}</button>`).join('');editor.innerHTML=THEME_FIELDS.map(([key,label])=>`<div class="theme-color-row"><span>${label}</span><button type="button" class="theme-pick-btn" aria-label="调整${label}" title="打开色板、色盘或滑块" onclick="openThemePicker('${key}')"><span class="theme-pick-swatch" style="background:${colors[key]}"></span></button></div>`).join('');document.getElementById('themeStatus').textContent=Object.keys(data.theme?.colors||{}).length?'已自定义':'使用预设';}
+function applyTheme(){const colors=themeColors(),root=document.documentElement.style;for(const [key,value] of Object.entries(colors)){root.setProperty(key==='heroStart'?'--hero-start':key==='heroEnd'?'--hero-end':'--'+key,value)}document.querySelector('meta[name="theme-color"]')?.setAttribute('content',colors.navy);applyMobileGlassTransparency();applyMobileGlassRefraction();}
+
+// 手机端玻璃透明度：100% 代表完全透明，数值随账本设置持久化。
+function glassTransparency(){const n=Number(data.mobileGlassTransparency);return Number.isFinite(n)&&data.mobileGlassTransparency!==undefined?Math.max(0,Math.min(100,n)):75}
+function applyMobileGlassTransparency(){
+ const strength=(100-glassTransparency())/100,root=document.documentElement;
+ root.style.setProperty('--mobile-glass-alpha',(strength*.32).toFixed(3));
+ root.style.setProperty('--mobile-glass-strength',strength.toFixed(3));
+ root.style.setProperty('--mobile-glass-sheen',(strength*.78).toFixed(3));
+ root.style.setProperty('--mobile-glass-blur',(strength*7).toFixed(2)+'px');
+ root.style.setProperty('--mobile-glass-plus-alpha',(strength*.22).toFixed(3));
+ root.style.setProperty('--mobile-glass-plus-blur',(strength*14).toFixed(2)+'px');
+ root.classList.toggle('mobile-glass-nearly-clear',glassTransparency()>=90);
+}
+// 折射强度存储在原账本对象中，登录后随账本设置一并同步。
+function glassRefraction(){const n=Number(data.mobileGlassRefraction);return data.mobileGlassRefraction!==undefined&&Number.isFinite(n)?Math.max(0,Math.min(100,n)):45}
+function applyMobileGlassRefraction(){
+ const n=glassRefraction(),r=document.documentElement;
+ r.style.setProperty('--refract-power',(n/100).toFixed(3));
+ r.style.setProperty('--refract-amount',(n*.16).toFixed(2)+'px');
+ r.classList.toggle('glass-refraction-enabled',n>0);
+ const displacement=document.querySelector('#glass-optic-refraction-v66 feDisplacementMap');
+ if(displacement)displacement.setAttribute('scale',(n*.16).toFixed(2));
+}
+function setMobileGlassRefraction(value,persist){
+ const n=Math.max(0,Math.min(100,Math.round(Number(value)||0)));
+ data.mobileGlassRefraction=n;
+ applyMobileGlassRefraction();
+ const label=document.getElementById('glassRefractionValue');
+ if(persist)save();
+}
+// V75: 自绘滑块：拖动直接跟随手指，释放后采用惯性感缓动吸附；避免 Safari 原生 range 值更新造成突跳。
+let glassSnapFrame=0;
+let glassPointerId=null;
+let glassActiveValue=null;
+function glassSliderPaint(value){
+ const slider=document.getElementById('glassOpacitySlider');if(!slider)return;
+ const v=Math.max(0,Math.min(100,Number(value)||0));
+ slider.style.setProperty('--glass-slider-percent',v+'%');
+ slider.style.setProperty('--glass-slider-fraction',String(v/100));
+ slider.setAttribute('aria-valuenow',String(Math.round(v)));
+ const thumb=slider.querySelector('.glass-smooth-thumb');
+ if(thumb)thumb.style.left='calc(10px + (100% - 20px) * '+(v/100)+')';
+}
+function refreshMobileGlassSetting(){
+ glassSliderPaint(glassTransparency());
+ const ref=document.getElementById('glassRefractionSlider'),refValue=document.getElementById('glassRefractionValue');
+ if(ref)ref.value=glassRefraction();if(refValue)refValue.textContent=glassRefraction()+'%';
+}
+function glassCancelSnap(){if(glassSnapFrame){cancelAnimationFrame(glassSnapFrame);glassSnapFrame=0;}document.getElementById('glassOpacitySlider')?.classList.remove('settling');}
+function glassUpdate(value){
+ const n=Math.max(0,Math.min(100,Number(value)||0));
+ glassActiveValue=n;data.mobileGlassTransparency=n;glassSliderPaint(n);applyMobileGlassTransparency();
+}
+function glassSmoothSnap(value){
+ glassCancelSnap();
+ const from=Math.max(0,Math.min(100,Number(value)||0));
+ const stop=Math.round(from/25)*25;
+ const distance=stop-from;
+ const slider=document.getElementById('glassOpacitySlider');
+ slider?.classList.add('settling');
+ if(Math.abs(distance)<.01){glassUpdate(stop);setTimeout(()=>{if(!slider?.classList.contains('dragging'))slider?.classList.remove('settling')},800);save();return;}
+ const start=performance.now();
+ const duration=440;
+ function frame(time){
+   const t=Math.min(1,(time-start)/duration);
+   // 五次平滑曲线：两端速度为零，中段连续，无硬跳。
+   const eased=t*t*t*(t*(t*6-15)+10);
+   glassUpdate(from+distance*eased);
+   if(t<1){glassSnapFrame=requestAnimationFrame(frame)}else{glassSnapFrame=0;glassUpdate(stop);setTimeout(()=>{if(!slider?.classList.contains('dragging'))slider?.classList.remove('settling')},360);save()}
+ }
+ glassSnapFrame=requestAnimationFrame(frame);
+}
+function glassValueAtPointer(e,slider){
+ const rect=slider.getBoundingClientRect();
+ // 使用滑道中心到中心的实际可用行程；拇指不会在端点突然偏移。
+ const pad=10;
+ const x=Math.max(0,Math.min(rect.width-pad*2,e.clientX-rect.left-pad));
+ return rect.width>pad*2?x/(rect.width-pad*2)*100:0;
+}
+function glassPointerDown(e){
+ if(e.pointerType==='mouse'&&e.button!==0)return;
+ const slider=e.currentTarget;
+ glassCancelSnap();glassPointerId=e.pointerId;
+ slider.setPointerCapture(e.pointerId);
+ slider.classList.add('dragging');
+ glassUpdate(glassValueAtPointer(e,slider));e.preventDefault();
+}
+function glassPointerMove(e){
+ if(glassPointerId!==e.pointerId)return;
+ glassUpdate(glassValueAtPointer(e,e.currentTarget));e.preventDefault();
+}
+function glassPointerEnd(e){
+ if(glassPointerId!==e.pointerId)return;
+ const slider=e.currentTarget;
+ glassPointerId=null;slider.classList.remove('dragging');
+ if(slider.hasPointerCapture(e.pointerId))slider.releasePointerCapture(e.pointerId);
+ glassSmoothSnap(glassActiveValue??glassTransparency());
+}
+function glassKeyDown(e){
+ let val=glassTransparency();
+ if(e.key==='ArrowLeft'||e.key==='ArrowDown')val-=25;
+ else if(e.key==='ArrowRight'||e.key==='ArrowUp')val+=25;
+ else if(e.key==='Home')val=0;
+ else if(e.key==='End')val=100;
+ else return;
+ e.preventDefault();glassCancelSnap();glassSmoothSnap(val);
+}
+function initGlassSlider(){
+ const slider=document.getElementById('glassOpacitySlider');
+ if(!slider||slider.dataset.bound==='1')return;
+ slider.dataset.bound='1';
+ slider.addEventListener('pointerdown',glassPointerDown);
+ slider.addEventListener('pointermove',glassPointerMove);
+ slider.addEventListener('pointerup',glassPointerEnd);
+ slider.addEventListener('pointercancel',glassPointerEnd);
+ slider.addEventListener('keydown',glassKeyDown);
+ glassSliderPaint(glassTransparency());
+}
+document.addEventListener('DOMContentLoaded',initGlassSlider);
+// 兼容此前调用接口。
+function setMobileGlassTransparency(value,persist){
+ glassCancelSnap();if(persist)glassSmoothSnap(value);else glassUpdate(value);
+}
+
+function renderThemeSettings(){const grid=document.getElementById('themePresets'),editor=document.getElementById('themeColorEditor');if(!grid||!editor)return;const current=themeInfo()[0],colors=themeColors();grid.innerHTML=THEME_LIST.map(([key,title,values])=>`<button type="button" class="theme-option ${current===key?'selected':''}" onclick="pickTheme('${key}')"><span class="theme-dots">${[values.bg,values.blue,values.heroEnd].map(v=>`<i style="background:${v}"></i>`).join('')}</span>${title}</button>`).join('');editor.innerHTML=THEME_FIELDS.map(([key,label])=>`<div class="theme-color-row"><span>${label}</span><button type="button" class="theme-pick-btn" aria-label="调整${label}" title="打开色板、色盘或滑块" onclick="openThemePicker('${key}')"><span class="theme-pick-swatch" style="background:${colors[key]}"></span></button></div>`).join('');initGlassSlider();refreshMobileGlassSetting();}
 
 // 颜色编辑器：保留原有 data.theme / setThemeColor 存储接口
 let colorPicker={key:null,mode:'palette',h:220,s:1,v:1,hex:'#689af8'};
@@ -307,7 +918,7 @@ function creditDeadlineInfo(a){
  if(creditDue(a.id)<=0)return {label:`截止 ${display} · 已还清`,cls:'paid'};
  return days<0?{label:`截止 ${display} · 已逾期 ${-days} 天`,cls:'urgent'}:days===0?{label:`截止 ${display} · 今天到期`,cls:'urgent'}:days<=3?{label:`截止 ${display} · 还剩 ${days} 天`,cls:'urgent'}:{label:`截止 ${display} · 还剩 ${days} 天`,cls:'normal'};
 }
-function renderCreditSummary(){const el=document.getElementById('creditSummary'),cards=data.accounts.filter(a=>a.kind==='credit');if(!cards.length){el.style.display='none';return}el.style.display='block';const sums={};cards.forEach(a=>sums[a.currency||'EUR']=(sums[a.currency||'EUR']||0)+creditDue(a.id));el.innerHTML=`<div class="credit-head"><b class="cardtitle">💳 信用卡待还</b><button class="link" onclick="switchTab('accounts')">管理信用卡 →</button></div><div class="credit-totals">${Object.entries(sums).map(([cur,n])=>`<div><div class="subtle">${esc(cur)} 待还总额</div><strong>${money(n,false,cur)}</strong></div>`).join('')}</div>${cards.map(a=>`<div class="credit-item"><span class="credit-item-name">${esc(a.icon||'💳')} ${esc(a.name)}<small class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</small></span><button class="link credit-setting" onclick="openCreditDueSettings('${a.id}')">设置待还</button><button class="link credit-repay" onclick="openRepayment('${a.id}')">还款</button></div>`).join('')}<p class="smallnote">信用卡消费计入支出；还款只减少待还和付款账户余额，不重复计入支出。</p>`;el.insertAdjacentHTML('afterbegin','<button type="button" class="home-drag-handle" title="按住拖动调整模块位置" aria-label="按住拖动信用卡待还模块">☰</button>')}
+function renderCreditSummary(){const el=document.getElementById('creditSummary'),cards=data.accounts.filter(a=>a.kind==='credit');if(!cards.length){el.style.display='none';return}el.style.display='block';const sums={};cards.forEach(a=>sums[a.currency||'EUR']=(sums[a.currency||'EUR']||0)+creditDue(a.id));el.innerHTML=`<div class="credit-head"><b class="cardtitle">💳 信用卡待还</b><button class="link" onclick="switchTab('accounts')">管理信用卡</button></div><div class="credit-totals">${Object.entries(sums).map(([cur,n])=>`<div><div class="subtle">${esc(cur)} 待还总额</div><strong>${money(n,false,cur)}</strong></div>`).join('')}</div>${cards.map(a=>`<div class="credit-item"><span class="credit-item-name">${esc(a.icon||'💳')} ${esc(a.name)}<small class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</small></span><button class="link credit-setting" onclick="openCreditDueSettings('${a.id}')">设置待还</button><button class="link credit-repay credit-repay-raised" onclick="openRepayment('${a.id}')">还款</button></div>`).join('')}<p class="smallnote">信用卡消费计入支出；还款只减少待还和付款账户余额，不重复计入支出。</p>`;el.insertAdjacentHTML('afterbegin','<button type="button" class="home-drag-handle" title="按住拖动调整模块位置" aria-label="按住拖动信用卡待还模块">☰</button>')}
 
 function renderAccounts(){document.getElementById('accountGrid').innerHTML=data.accounts.length?data.accounts.map(a=>`<div class="account" data-account-id="${esc(a.id)}"><div class="spread"><span style="font-weight:700">${a.icon||'💳'} ${esc(a.name)} <span class="dim">${a.currency||'EUR'}${a.kind==='credit'?' · 信用卡':''}</span></span><button class="link" onclick="openAccount('${a.id}')">编辑</button><button type="button" class="draghandle accountdrag" aria-label="按住拖动排序 ${esc(a.name)}" title="按住拖动排序">☰</button></div><div class="balance">${a.kind==='credit'?'待还 ':''}${money(balance(a.id),false,a.currency||'EUR')}</div><div class="dim">${a.kind==='credit'?'初始待还':'初始余额'} ${money(a.initial,false,a.currency||'EUR')}</div>${a.kind==='credit'?`<div class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn small" onclick="openCreditDueSettings('${a.id}')">设置待还金额</button><button class="btn small" onclick="openRepayment('${a.id}')">信用卡还款</button></div>`:''}</div>`).join(''):'<div class="empty">还没有付款/收款方式</div>'}
 function renderReports(){document.getElementById('repIncome').textContent=money(total(monthly('income')));document.getElementById('repExpense').textContent=money(total(monthly('expense')));drawRank(summarizeCats('expense'),'expenseRank');drawRank(summarizeCats('income'),'incomeRank');let byDate={};for(let t of data.transactions.filter(t=>ym(t.date)===monthKey()&&['income','expense'].includes(t.type))){if(!byDate[t.date])byDate[t.date]={income:0,expense:0};byDate[t.date][t.type]+=convert(Number(t.amount),t.currency||'EUR',data.currency)}document.getElementById('dailyReport').innerHTML=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([d,v])=>`<div class="budgetrow spread"><b>${d}</b><span><span class="green">+${money(v.income)}</span>　<span class="red">-${money(v.expense)}</span></span></div>`).join('')||'<div class="empty">本月暂无收支记录</div>'}
@@ -687,11 +1298,49 @@ function showHomeMenu(handle,id){
  pop.style.left=left+'px';
  pop.style.top=top+'px';
 }
+// V85: 直接更新当前开关的状态，不重新构建弹窗 DOM；保留 CSS 位移动画。
+// V87：用 Web Animations 直接驱动圆点位置，避免样式切换时瞬移；连续点击也从当前帧平滑转向。
+function toggleHomeManageSwitch(button,id){
+ if(!button||!HOME_DEFAULT_ORDER.includes(id))return;
+ const knob=button.querySelector('.ios-switch-knob');
+ const wasOn=button.getAttribute('aria-checked')==='true';
+ const newOn=!wasOn;
+ if(knob){
+  // 取消上一段动画前读取当前可见位置，保证连续点击时不会跳跃。
+  const Matrix=window.DOMMatrixReadOnly||window.WebKitCSSMatrix;
+  const matrix=new Matrix(getComputedStyle(knob).transform);
+  const fromX=Number.isFinite(matrix.m41)?matrix.m41:(wasOn?20:0);
+  knob.getAnimations().forEach(anim=>anim.cancel());
+  const toX=newOn?20:0;
+  // 先设置最终状态，再用独立动画从上一帧平滑滑到目标。
+  button.classList.toggle('is-on',newOn);
+  knob.animate([
+    {transform:`translateX(${fromX}px)`},
+    {transform:`translateX(${toX}px)`}
+  ],{duration:720,easing:'cubic-bezier(0.22, 0.78, 0.20, 1)',fill:'none'});
+ }else{
+  button.classList.toggle('is-on',newOn);
+ }
+ button.setAttribute('aria-checked',String(newOn));
+ button.setAttribute('aria-label',HOME_LABELS[id]+(newOn?'停用':'启用'));
+ setHomeVisibility(id,newOn);
+}
+function syncHomeSettingsSwitches(){
+ const panel=document.getElementById('homeSettingsCollapse');if(!panel)return;
+ panel.querySelectorAll('.ios-visibility-switch').forEach((button,i)=>{
+  const id=HOME_DEFAULT_ORDER[i],on=!homeHidden.has(id);
+  button.classList.toggle('is-on',on);
+  button.setAttribute('aria-checked',String(on));
+  button.setAttribute('aria-label',HOME_LABELS[id]+(on?'停用':'启用'));
+ });
+}
+document.getElementById('homeSettingsCollapse')?.addEventListener('toggle',e=>{if(e.currentTarget.open)syncHomeSettingsSwitches()});
+syncHomeSettingsSwitches();
 function openHomeManage(){
  closeHomeMenu();const rows=HOME_DEFAULT_ORDER.map(id=>{
- const hidden=homeHidden.has(id);return `<div class="home-manage-row"><span>${HOME_LABELS[id]}</span><button type="button" class="btn small ${hidden?'primary':''}" onclick="setHomeVisibility('${id}',${hidden});openHomeManage()">${hidden?'显示':'隐藏'}</button></div>`
+ const hidden=homeHidden.has(id);return `<div class="home-manage-row"><span>${HOME_LABELS[id]}</span><button type="button" class="ios-visibility-switch ${hidden?'':'is-on'}" role="switch" aria-checked="${hidden?'false':'true'}" aria-label="${HOME_LABELS[id]}${hidden?'启用':'停用'}" onclick="toggleHomeManageSwitch(this,'${id}')"><span class="ios-switch-knob" aria-hidden="true"></span></button></div>`
  }).join('');
- modal(`<div class="modalhead"><h2>管理首页模块</h2><button class="close" type="button" onclick="closeModal()">✕</button></div><p class="smallnote">隐藏的模块不会删除数据，可随时重新显示。按住模块右上角 ☰ 拖到另一个模块上并松手，即可互换位置。</p><div class="home-manage-list">${rows}</div><button class="btn primary" style="width:100%" type="button" onclick="closeModal()">完成</button>`);
+ modal(`<div class="modalhead"><h2>管理首页模块</h2><button class="close" type="button" onclick="closeModal()">✕</button></div><div class="home-manage-list">${rows}</div><button class="btn primary" style="width:100%" type="button" onclick="closeModal()">完成</button>`);
 }
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('#homeModuleMenu')&&!e.target.closest('.home-drag-handle'))closeHomeMenu()});
 
@@ -828,12 +1477,30 @@ const $=id=>document.getElementById(id);
 const snapshot=()=>JSON.stringify(window.ledgerGetData());
 const hash=x=>{let h=2166136261;for(let i=0;i<x.length;i++)h=Math.imul(h^x.charCodeAt(i),16777619);return (h>>>0).toString(16)+'-'+x.length};
 const hashKey=uid=>'jiyibi_cloud_last_hash_'+uid;
+const syncTimeKey=uid=>'jiyibi_cloud_last_success_'+uid;
+function syncTimeLabel(){
+ if(!user)return '';
+ try{const stamp=localStorage.getItem(syncTimeKey(user.uid));if(!stamp)return '尚未完成同步';
+  const dt=new Date(stamp);if(!Number.isFinite(dt.getTime()))return '尚未完成同步';
+  const now=new Date(),sameDay=dt.toDateString()===now.toDateString();
+  return '上次同步：'+(sameDay?'今天 ':'')+dt.toLocaleString('zh-CN',sameDay?{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}:{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+ }catch(e){return '同步时间不可用'}
+}
+function renderSyncTime(){const el=$('cloudLastSync');if(!el)return;
+ el.hidden=!user;el.textContent=syncTimeLabel();el.title=user?'最近一次成功与云端确认的时间':'';
+}
+function markSyncSuccessful(){if(!user)return;try{localStorage.setItem(syncTimeKey(user.uid),new Date().toISOString())}catch(e){}renderSyncTime()}
+
 function setState(msg){
  $('cloudStatus').textContent=msg;
  $('cloudSettingsStatus').textContent=msg;
- $('cloudDetail').textContent=msg+(user?' · '+(user.email||''):'');
+ renderSyncTime();
  $('cloudLoginBtn').hidden=!!user;
  $('cloudLogoutBtn').hidden=!user;
+ const settingsLogin=$('cloudSettingsLoginBtn'),settingsSync=$('cloudSettingsSyncBtn'),settingsLogout=$('cloudSettingsLogoutBtn');
+ if(settingsLogin)settingsLogin.hidden=!!user;
+ if(settingsLogout)settingsLogout.hidden=!user;
+ if(settingsSync)settingsSync.hidden=!user;
  const hint=$('sidebarCloudHint');
  if(hint){
   if(!user)hint.textContent='数据仅保存在当前浏览器。';
@@ -856,7 +1523,7 @@ function choice(heading,desc,buttons){pendingDecision=true;document.getElementBy
 function offerConflict(remote,revision,first=false){if(conflictDisplayed)return;conflictDisplayed=true;ready=false;setState('⚠️ 等待选择账本版本');
  choice(first?'选择首次登录的账本':'发现两台设备有不同修改',
  first?'本机和云端账本不同。请选择保留哪份；此操作会影响当前使用的账本。':'云端记录已被其他设备修改。为了避免覆盖数据，请选择要使用的版本。',[
- {label:'使用云端数据',primary:true,action:()=>{if(applyRemote(remote)){baseRevision=revision;remember();ready=true;setState('☁ 已同步 · 云端最新版')} }},
+ {label:'使用云端数据',primary:true,action:()=>{if(applyRemote(remote)){baseRevision=revision;remember();ready=true;markSyncSuccessful();setState('☁ 已同步 · 云端最新版')} }},
  {label:'上传本机数据',action:()=>{baseRevision=revision;ready=true;pending=true;push()}},
  {label:'暂不处理',action:()=>{ready=false;pending=true;setState('⚠️ 同步已暂停；请点击立即同步')}}])}
 async function push(){if(!user||!ready||pendingDecision||sending||!pending)return;
@@ -865,28 +1532,28 @@ async function push(){if(!user||!ready||pendingDecision||sending||!pending)retur
  if(serverRevision!==revision)throw new Error('CLOUD_CONFLICT');
  const next=serverRevision+1;tx.set(cloudRef,{revision:next,ledger:content,updatedAt:new Date().toISOString(),schema:1});return next});
  baseRevision=newRev;
- if(hash(snapshot())===currentHash){remember();setState('☁ 已同步 · '+new Date().toLocaleTimeString('zh-CN'))}else{pending=true;setTimeout(push,200)}
+ if(hash(snapshot())===currentHash){remember();markSyncSuccessful();setState('☁ 已同步 · '+new Date().toLocaleTimeString('zh-CN'))}else{pending=true;setTimeout(push,200)}
  }catch(e){pending=true;if(e.message==='CLOUD_CONFLICT'){ready=false;setState('⚠️ 云端有更新，需选择版本');await refreshCloud(true)}else{console.error('云同步失败',e);setState('⚠️ 云同步失败 · 本机已保存');}}
  finally{sending=false;if(pending&&ready&&!pendingDecision)setTimeout(push,1500)}}
 async function refreshCloud(force=false){if(!user)return;try{const snap=await getDoc(cloudRef),remote=snap.exists()?snap.data().ledger:null,revision=snap.exists()?Number(snap.data().revision||0):0;
  if(!remote){baseRevision=0;ready=true;if(!pending){pending=true}await push();return}
  if(!Array.isArray(remote.transactions)||!Array.isArray(remote.accounts))throw new Error('云端数据格式无效');
  const remoteHash=hash(JSON.stringify(remote)),localHash=hash(snapshot()),stored=localStorage.getItem(hashKey(user.uid));
- if(remoteHash===localHash){baseRevision=revision;ready=true;remember();setState('☁ 已同步');return}
- if(!force&&stored===localHash){if(applyRemote(remote)){baseRevision=revision;ready=true;remember();setState('☁ 已同步 · 已获取最新账本')}return}
+ if(remoteHash===localHash){baseRevision=revision;ready=true;remember();markSyncSuccessful();setState('☁ 已同步');return}
+ if(!force&&stored===localHash){if(applyRemote(remote)){baseRevision=revision;ready=true;remember();markSyncSuccessful();setState('☁ 已同步 · 已获取最新账本')}return}
  if(!force&&stored===remoteHash){baseRevision=revision;ready=true;pending=true;push();return}
  offerConflict(remote,revision,!stored)
  }catch(e){console.error(e);ready=false;setState('⚠️ 无法读取云端 · 本机仍可使用');}}
 function listen(){if(unsubscribe)unsubscribe();unsubscribe=onSnapshot(cloudRef,snap=>{if(!ready||pendingDecision||sending||!snap.exists())return;
  const d=snap.data(),rev=Number(d.revision||0);if(rev<=baseRevision)return;
  if(pending||hash(snapshot())!==savedHash){offerConflict(d.ledger,rev);return}
- if(applyRemote(d.ledger)){baseRevision=rev;remember();setState('☁ 已同步 · 来自其他设备的更新')}
+ if(applyRemote(d.ledger)){baseRevision=rev;remember();markSyncSuccessful();setState('☁ 已同步 · 来自其他设备的更新')}
  },e=>{console.warn('实时同步不可用',e);setState('⚠️ 实时同步不可用')})}
 window.ledgerCloudLogin=async()=>{if(!location.protocol.startsWith('http'))return alert('Google 登录请通过 GitHub Pages 的 HTTPS 地址打开，不支持直接双击本地 HTML。');
  try{await signInWithPopup(auth,provider)}catch(e){console.error(e);setState('⚠️ Google 登录失败');alert('Google 登录失败：'+(e.code||e.message)+'\n请确认 Firebase Authentication 已开启 Google 登录，并授权当前 GitHub Pages 域名。')}};
 window.ledgerCloudLogout=()=>{
  if(!user)return;
- showDialog(`<div class="dialogicon">🚪</div><h3>确认退出登录？</h3><p>退出后将停止当前设备的云端同步。已同步到云端的账本不会被删除，当前浏览器中的账目也会保留。<br><br><strong>建议先确认顶部显示「☁ 已同步」，再退出登录。</strong></p><div class="dialogactions"><button type="button" class="btn" onclick="closeDialog()">取消</button><button type="button" class="btn primary" id="confirmCloudLogout" onclick="window.ledgerCloudLogoutConfirmed?.()">确认退出</button></div><div id="cloudLogoutError" class="dialogerror" role="alert" style="display:none"></div>`);
+ showDialog(`<div class="dialogicon">🚪</div><h3>确认退出登录？</h3><p>退出后将停止当前设备的云端同步。已同步到云端的账本不会被删除，当前浏览器中的账目也会保留。<br><br><strong>建议先在设置页确认显示「☁ 已同步」，再退出登录。</strong></p><div class="dialogactions"><button type="button" class="btn" onclick="closeDialog()">取消</button><button type="button" class="btn primary" id="confirmCloudLogout" onclick="window.ledgerCloudLogoutConfirmed?.()">确认退出</button></div><div id="cloudLogoutError" class="dialogerror" role="alert" style="display:none"></div>`);
 };
 window.ledgerCloudLogoutConfirmed=async()=>{
  const btn=$('confirmCloudLogout');if(btn){btn.disabled=true;btn.textContent='正在退出…'}
@@ -903,7 +1570,7 @@ window.addEventListener('visibilitychange',()=>{if(!document.hidden&&user&&!pend
  const previousOwner=localStorage.getItem(LOCAL_OWNER_KEY);
  if(previousOwner&&previousOwner!==u.uid){setState('⚠️ Google 账号已更换');
  choice('检测到不同的 Google 账号','本机数据可能属于上一个账号。请先导出 JSON 备份，然后选择是否读取当前账号云端数据。',[
- {label:'读取当前账号云端',primary:true,action:async()=>{try{const next=await getDoc(cloudRef);if(next.exists()&&next.data().ledger){applyRemote(next.data().ledger);baseRevision=Number(next.data().revision||0);ready=true;remember();setState('☁ 已同步 · 当前账号');listen()}else{window.ledgerSetData(window.ledgerDefaultData());baseRevision=0;pending=true;ready=true;await push();listen()}}catch(e){setState('⚠️ 账号切换失败 · 请检查网络');console.error(e)}}},
+ {label:'读取当前账号云端',primary:true,action:async()=>{try{const next=await getDoc(cloudRef);if(next.exists()&&next.data().ledger){applyRemote(next.data().ledger);baseRevision=Number(next.data().revision||0);ready=true;remember();markSyncSuccessful();setState('☁ 已同步 · 当前账号');listen()}else{window.ledgerSetData(window.ledgerDefaultData());baseRevision=0;pending=true;ready=true;await push();listen()}}catch(e){setState('⚠️ 账号切换失败 · 请检查网络');console.error(e)}}},
  {label:'暂不切换',action:()=>signOut(auth)}]);return}
  await refreshCloud();listen();
  })}catch(e){console.error(e);setState('⚠️ Firebase 初始化失败')}})();
