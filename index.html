@@ -647,6 +647,39 @@
 @media(max-width:800px){.day{min-width:0;min-height:77px}.day-holiday{font-size:9px;letter-spacing:-.2px}.holiday-legend{font-size:11px;gap:12px}}
 @media(max-width:370px){.day-holiday{font-size:8px}}
 </style>
+<style id="v113-credit-due-date-fixes">
+@media(max-width:480px){#modalContent .modalfooter:has(button[onclick^="confirmClearCreditDueSettings"]){display:grid;grid-template-columns:1fr 1fr}#modalContent .modalfooter button[onclick^="confirmClearCreditDueSettings"]{grid-column:1/-1}}
+</style>
+<style id="v114-tx-date-filter">
+.tx-date-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tx-date-controls[hidden],.tx-date-controls [hidden]{display:none!important}
+.tx-date-controls label{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap}
+.tx-date-controls input[type=date]{width:153px;max-width:100%;flex:0 0 auto;font-size:13px;padding:10px 8px;min-width:0}
+#txDateMode{min-width:120px}
+@media(max-width:800px){#transactions .toolbar{gap:9px}#transactions .toolbar #searchTx{flex-basis:100%;width:100%}.tx-date-controls{flex-basis:100%;width:100%;gap:6px}.tx-date-controls input[type=date]{flex:1 1 110px;width:auto;min-width:0}}
+</style>
+<style id="v115-filtered-totals">
+.tx-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.tx-summary-item{min-width:0;padding:15px 17px;border:1px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow)}
+.tx-summary-label{color:var(--muted);font-weight:700;font-size:12px;margin-bottom:7px}
+.tx-summary-amount{font-weight:800;font-size:19px;line-height:1.45;overflow-wrap:anywhere}
+.tx-summary-amount span{display:block}
+.tx-summary-item.income .tx-summary-amount{color:var(--green)}
+.tx-summary-item.expense .tx-summary-amount{color:var(--red)}
+.tx-summary-item.net .tx-summary-amount{color:var(--text)}
+.tx-summary-hint{grid-column:1/-1;color:var(--muted);font-size:11px;line-height:1.5;margin-top:-3px}
+@media(max-width:600px){.tx-summary{gap:7px}.tx-summary-item{padding:11px 9px;border-radius:13px}.tx-summary-amount{font-size:15px}.tx-summary-label{font-size:11px}}
+</style>
+<style id="v116-search-suggestions">
+.tx-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tx-search-wrap{position:relative;flex:1 1 210px;min-width:140px;z-index:8}
+.tx-search-wrap .field{width:100%;min-width:0}
+.tx-suggestion-list{position:absolute;left:0;right:0;top:calc(100% + 5px);z-index:40;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:0 12px 30px rgba(18,35,68,.17);padding:5px}
+.tx-suggestion-list[hidden]{display:none!important}
+.tx-suggestion{display:block;width:100%;text-align:left;background:transparent;color:var(--text);padding:11px 13px;border:0;border-radius:9px;font-weight:650;font-size:14px}
+.tx-suggestion:hover,.tx-suggestion:focus-visible{background:var(--bluewash);color:var(--blue)}
+@media(max-width:800px){#transactions .toolbar .tx-search-wrap{flex-basis:100%;width:100%;min-width:0}}
+</style>
 </head>
 <body>
 <svg class="glass-optics-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
@@ -661,7 +694,7 @@
 
 <div class="app"><aside class="sidebar"><button type="button" class="logo brand-home-link" aria-label="返回财务概览首页" title="返回首页" onclick="switchTab('dashboard')"><svg class="brand-symbol" viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="62" height="62" rx="16" fill="#fff" stroke="#e6ebf5" stroke-width="1.2"/><path d="M16 19.5c0-4.5 3.1-7.9 7.7-8.5L45 8.5c2.1-.3 3.8 1.1 4.2 3.2l1.2 7.8" fill="none" stroke="var(--blue)" stroke-width="4.2" stroke-linecap="round" opacity=".55"/><path d="M14 22c0-3.9 3.1-7 7-7h28c3.9 0 7 3.1 7 7v27c0 3.9-3.1 7-7 7H21c-3.9 0-7-3.1-7-7Z" fill="var(--blue)"/><path d="M17 22c0-2.6 2-4.5 4.5-4.5H48" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/><path d="M29 28l5 6 5-6M34 34v12M28 37h12M28 41h12" fill="none" stroke="#fff" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M46.5 31H58v16H46.5c-3.7 0-6.5-2.8-6.5-6.5V37.5c0-3.7 2.8-6.5 6.5-6.5Z" fill="var(--bluewash)" stroke="var(--blue)" stroke-width="1.8"/><circle cx="48" cy="39" r="3" fill="var(--blue)"/></svg><span class="brand-wordmark">记一笔</span></button><nav id="sideNav"></nav><div class="sidebar-hint">每一笔，都有迹可循。<br><span id="sidebarCloudHint">数据仅保存在当前浏览器。</span><br><span class="app-build-label">V89 · 同步时间</span></div></aside><main class="main"><header class="topbar"><div><div class="eyebrow" id="greeting"></div><h1 class="title" id="pageTitle">财务概览</h1></div><div class="cloud-header" hidden aria-hidden="true"><span class="cloud-status" id="cloudStatus">☁ 未登录 · 仅本机</span><button class="btn small" id="cloudLoginBtn" type="button" onclick="window.ledgerCloudLogin?.()">使用 Google 登录</button><button class="btn small" id="cloudLogoutBtn" type="button" hidden onclick="window.ledgerCloudLogout?.()">退出登录</button></div></header>
 <section class="section show" id="dashboard"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="home-board" id="homeBoard"><div class="hero home-module home-wide" data-home-module="overview"><button aria-label="按住拖动收支总览模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="hero-dual"><div class="hero-panel"><div class="hero-currency">🇪🇺 欧元 EUR</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceEUR">€0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeEUR"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseEUR"></strong></div></div></div><div class="hero-panel right"><div class="hero-currency">🇨🇳 人民币 CNY</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceCNY">¥0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeCNY"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseCNY"></strong></div></div></div></div></div><div class="card credit-summary home-module home-wide" data-home-module="credit" id="creditSummary" style="display:none"><button aria-label="按住拖动信用卡待还模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button></div><div class="card home-module" data-home-module="categories"><button aria-label="按住拖动支出分类模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">支出分类</span><div class="cat-month-control" aria-label="支出分类月份选择"><button type="button" onclick="changeCategoryMonth(-1)" aria-label="查看上个月支出分类">‹</button><span id="categoryMonthLabel" aria-live="polite"></span><button type="button" onclick="changeCategoryMonth(1)" aria-label="查看下个月支出分类">›</button></div></div><div class="stats"><div class="donut" id="donut"><div class="donut-text"><div class="subtle">总支出</div><b id="donutAmount"></b></div></div><div class="legend" id="legend"></div></div></div><div class="card home-module" data-home-module="trend"><button aria-label="按住拖动收支趋势模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead trend-head"><span class="cardtitle">收支趋势</span><div class="trend-legend"><span><span class="dot" style="background:#81dec4"></span>收入</span><span><span class="dot" style="background:#707fe5"></span>支出</span></div></div><div aria-label="趋势统计时间范围" class="trend-switch" role="group"><button data-range="1" onclick="setTrendRange(1)" type="button">1个月</button><button data-range="3" onclick="setTrendRange(3)" type="button">3个月</button><button data-range="6" onclick="setTrendRange(6)" type="button">6个月</button><button data-range="12" onclick="setTrendRange(12)" type="button">1年</button></div><div class="bar-chart" id="trend"></div></div><div class="card home-module" data-home-module="recent"><button aria-label="按住拖动最近交易模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">最近交易</span><button class="link" onclick="switchTab('transactions')">查看全部</button></div><div class="list" id="recentList"></div></div><div class="card home-module" data-home-module="budget"><button aria-label="按住拖动本月预算模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">本月预算</span><button class="link" onclick="switchTab('budgets')">管理预算</button></div><div id="budgetPreview"></div></div></div></section>
-<section id="transactions" class="section"><div class="toolbar"><input class="field" id="searchTx" placeholder="🔎 搜索备注、分类或商户…" oninput="renderTransactions()"><select class="select" id="txTypeFilter" onchange="renderTransactions()"><option value="all">全部类型</option><option value="expense">支出</option><option value="income">收入</option><option value="repayment">信用卡还款</option></select><select class="select" id="txAccountFilter" onchange="renderTransactions()"></select><button class="btn small" id="allMonthsBtn" onclick="toggleAllMonths()">当前月份</button></div><div class="card"><div class="cardhead"><span class="cardtitle">交易明细</span><span class="subtle" id="txCount"></span></div><div id="txList"></div></div></section>
+<section id="transactions" class="section"><div class="toolbar"><div class="tx-search-wrap"><input class="field" id="searchTx" placeholder="🔎 搜索备注、分类或商户…" autocomplete="off" oninput="renderTransactions()" onfocus="updateTransactionSuggestions()"><div id="txSearchSuggestions" class="tx-suggestion-list" hidden></div></div><select class="select" id="txTypeFilter" onchange="renderTransactions()"><option value="all">全部类型</option><option value="expense">支出</option><option value="income">收入</option><option value="repayment">信用卡还款</option></select><select class="select" id="txAccountFilter" onchange="renderTransactions()"></select><select class="select" id="txDateMode" aria-label="日期范围" onchange="updateTxDateControls()"><option value="month">当前月份</option><option value="all">全部日期</option><option value="day">指定日期</option><option value="range">日期区间</option></select><div class="tx-date-controls" id="txDateControls" hidden><label id="txStartLabel" for="txDateStart">日期</label><input class="field" type="date" id="txDateStart" aria-label="开始日期" onchange="renderTransactions()"><label id="txEndLabel" for="txDateEnd" hidden>至</label><input class="field" type="date" id="txDateEnd" aria-label="结束日期" onchange="renderTransactions()" hidden></div></div><div class="tx-summary" id="txSummary" aria-live="polite"></div><div class="card"><div class="cardhead"><span class="cardtitle">交易明细</span><span class="subtle" id="txCount"></span></div><div id="txList"></div></div></section>
 <section id="calendar" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="card"><div class="holiday-legend"><span class="cn">● 中国节日</span><span class="it">● 意大利节日</span></div><div class="calendar" id="calGrid"></div></div><div class="card" style="margin-top:17px"><div class="cardhead"><span class="cardtitle" id="calDayTitle">当日明细</span><button class="link" onclick="openTransaction(selectedDay)">＋ 添加</button></div><div id="calHolidayInfo"></div><div id="calDayList"></div></div></section>
 <section id="budgets" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button><button class="btn primary" onclick="openBudget()">＋ 设置预算</button></div><div class="card"><div class="cardhead"><span class="cardtitle">每月预算</span><span class="subtle">预算设置适用于所有月份</span></div><div id="budgetList"></div></div></section>
 <section id="accounts" class="section"><div class="toolbar"><button class="btn primary" onclick="openAccount()">＋ 添加账户</button></div><p class="smallnote" style="margin:0 0 12px">按住右侧 ☰ 拖动付款/收款方式，松手自动保存顺序。</p><div class="accountgrid" id="accountGrid"></div><p class="smallnote">每个付款/收款方式以自身币种保留余额。</p><p class="smallnote" style="margin-top:17px">提示：按住卡片右上角 ☰ 拖动可调整付款/收款方式的显示顺序。删除已有交易的方式前，须先调整相关交易。</p></section>
@@ -957,8 +990,76 @@ function renderDashboard(){const monthIncomes=monthly('income'),monthExpenses=mo
   const category=data.categories.expense.find(c=>c.name===name);
   return `<div class="budget-preview-row"><div class="budget-preview-title"><b>${esc(category?.icon||'📁')} ${esc(name)}</b><span class="dim">预算 ${money(budget)}</span></div><div class="budget-preview-meta"><span>已支出 ${money(spent)}</span><strong class="${remaining<0?'red':'green'}">${remaining<0?'超支 '+money(-remaining):'剩余 '+money(remaining)}</strong></div><div class="progress ${remaining<0?'warn':''}"><div style="width:${ratio}%"></div></div></div>`;
  }).join(''):'<div class="empty">尚未设置每月预算</div>'}
-function renderTransactions(){let q=document.getElementById('searchTx').value.trim().toLowerCase(),tfilter=document.getElementById('txTypeFilter').value,acctFilter=document.getElementById('txAccountFilter');let old=acctFilter.value;acctFilter.innerHTML='<option value="all">全部账户</option>'+data.accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');acctFilter.value=data.accounts.some(a=>a.id===old)?old:'all';document.getElementById('allMonthsBtn').textContent=showAllMonths?'全部月份':'当前月份';let arr=data.transactions.filter(t=>(showAllMonths||ym(t.date)===monthKey())&&(tfilter==='all'||t.type===tfilter)&&(acctFilter.value==='all'||t.account===acctFilter.value||t.toAccount===acctFilter.value)&&`${t.note||''} ${t.category||''} ${acct(t.account)?.name||''}`.toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date)||b.created.localeCompare(a.created));document.getElementById('txCount').textContent=arr.length+' 笔';document.getElementById('txList').innerHTML=arr.length?arr.map(txHTML).join(''):'<div class="empty">没有符合条件的交易</div>'}
-function toggleAllMonths(){showAllMonths=!showAllMonths;renderTransactions()}
+function updateTxDateControls(){
+ const mode=document.getElementById('txDateMode').value;
+ const panel=document.getElementById('txDateControls'),start=document.getElementById('txDateStart'),end=document.getElementById('txDateEnd');
+ panel.hidden=mode!=='day'&&mode!=='range';
+ document.getElementById('txStartLabel').textContent=mode==='range'?'开始':'日期';
+ document.getElementById('txEndLabel').hidden=mode!=='range';end.hidden=mode!=='range';
+ if(!start.value)start.value=today();
+ if(mode==='range'&&!end.value)end.value=today();
+ renderTransactions();
+}
+
+// V116: Pinyin initialism/prefix matching offline, no external API.
+const TX_PINYIN_MAP={"一":"yi","七":"qi","三":"san","上":"shang","下":"xia","不":"bu","与":"yu","世":"shi","东":"dong","两":"liang","严":"yan","个":"ge","中":"zhong","为":"wei","主":"zhu","久":"jiu","义":"yi","乐":"le","也":"ye","习":"xi","书":"shu","买":"mai","了":"liao","二":"er","于":"yu","云":"yun","互":"hu","五":"wu","些":"xie","交":"jiao","京":"jing","亮":"liang","人":"ren","仅":"jin","今":"jin","仍":"reng","从":"cong","他":"ta","付":"fu","代":"dai","令":"ling","以":"yi","件":"jian","份":"fen","休":"xiu","会":"hui","传":"chuan","似":"si","但":"dan","位":"wei","住":"zhu","体":"ti","余":"yu","作":"zuo","你":"ni","使":"shi","例":"li","依":"yi","侧":"ce","便":"bian","保":"bao","信":"xin","修":"xiu","倒":"dao","值":"zhi","假":"jia","偏":"pian","停":"ting","健":"jian","偿":"chang","储":"chu","像":"xiang","元":"yuan","充":"chong","先":"xian","光":"guang","克":"ke","免":"mian","兑":"dui","入":"ru","全":"quan","八":"ba","公":"gong","六":"liu","共":"gong","关":"guan","其":"qi","具":"ju","典":"dian","兼":"jian","内":"nei","再":"zai","写":"xie","农":"nong","准":"zhun","减":"jian","几":"ji","出":"chu","击":"ji","分":"fen","切":"qie","列":"lie","则":"ze","创":"chuang","初":"chu","删":"shan","利":"li","别":"bie","到":"dao","制":"zhi","刷":"shua","前":"qian","剩":"sheng","功":"gong","加":"jia","务":"wu","动":"dong","劳":"lao","势":"shi","包":"bao","化":"hua","匹":"pi","区":"qu","医":"yi","十":"shi","升":"sheng","午":"wu","单":"dan","卖":"mai","占":"zhan","卡":"qia","即":"ji","历":"li","压":"ya","原":"yuan","厨":"chu","去":"qu","及":"ji","双":"shuang","反":"fan","发":"fa","取":"qu","变":"bian","叠":"die","口":"kou","只":"zhi","可":"ke","台":"tai","史":"shi","右":"you","号":"hao","吃":"chi","各":"ge","合":"he","同":"tong","名":"ming","后":"hou","向":"xiang","吗":"ma","否":"fou","含":"han","启":"qi","吸":"xi","周":"zhou","命":"ming","和":"he","咖":"ka","品":"pin","响":"xiang","哪":"na","哭":"ku","商":"shang","啡":"pei","喜":"xi","器":"qi","囊":"nang","四":"si","回":"hui","围":"wei","固":"gu","国":"guo","图":"tu","圆":"yuan","圣":"sheng","在":"zai","地":"di","场":"chang","址":"zhi","均":"jun","块":"kuai","垂":"chui","型":"xing","域":"yu","填":"tian","增":"zeng","墨":"mo","处":"chu","备":"bei","复":"fu","夏":"xia","夕":"xi","外":"wai","多":"duo","夜":"ye","大":"da","天":"tian","太":"tai","央":"yang","失":"shi","奖":"jiang","套":"tao","奶":"nai","好":"hao","如":"ru","始":"shi","娱":"yu","子":"zi","字":"zi","存":"cun","学":"xue","它":"ta","守":"shou","安":"an","完":"wan","官":"guan","定":"ding","宝":"bao","实":"shi","宠":"chong","宵":"xiao","家":"jia","容":"rong","密":"mi","寸":"cun","对":"dui","导":"dao","射":"she","将":"jiang","少":"shao","尚":"shang","尝":"chang","尺":"chi","局":"ju","层":"ceng","展":"zhan","属":"shu","嵌":"qian","工":"gong","差":"chai","已":"yi","币":"bi","市":"shi","布":"bu","帜":"zhi","帧":"zheng","常":"chang","平":"ping","年":"nian","并":"bing","庆":"qing","序":"xu","库":"ku","应":"ying","底":"di","店":"dian","度":"du","建":"jian","开":"kai","异":"yi","式":"shi","弹":"dan","强":"qiang","当":"dang","录":"lu","影":"ying","彻":"che","往":"wang","待":"dai","循":"xun","微":"wei","德":"de","心":"xin","必":"bi","忽":"hu","态":"tai","性":"xing","总":"zong","恢":"hui","悬":"xuan","情":"qing","惯":"guan","意":"yi","感":"gan","戏":"xi","成":"cheng","或":"huo","截":"jie","户":"hu","房":"fang","所":"suo","手":"shou","才":"cai","打":"da","找":"zhao","把":"ba","投":"tou","折":"zhe","护":"hu","报":"bao","拇":"mu","拖":"tuo","拦":"lan","择":"ze","拼":"pin","拽":"zhuai","持":"chi","指":"zhi","按":"an","挡":"dang","挤":"ji","换":"huan","据":"ju","授":"shou","掉":"diao","排":"pai","接":"jie","推":"tui","提":"ti","插":"cha","握":"wo","搜":"sou","撤":"che","操":"cao","支":"zhi","收":"shou","改":"gai","放":"fang","效":"xiao","教":"jiao","数":"shu","整":"zheng","文":"wen","料":"liao","斯":"si","新":"xin","方":"fang","旅":"lu","旗":"qi","无":"wu","日":"ri","旦":"dan","旧":"jiu","早":"zao","时":"shi","明":"ming","易":"yi","星":"xing","春":"chun","是":"shi","显":"xian","晚":"wan","普":"pu","景":"jing","暂":"zan","曲":"qu","更":"geng","最":"zui","月":"yue","有":"you","服":"fu","望":"wang","期":"qi","未":"wei","本":"ben","机":"ji","权":"quan","束":"shu","条":"tiao","来":"lai","松":"song","板":"ban","构":"gou","林":"lin","果":"guo","柄":"bing","染":"ran","柔":"rou","查":"cha","标":"biao","栏":"lan","样":"yang","核":"he","根":"gen","格":"ge","框":"kuang","检":"jian","森":"sen","概":"gai","模":"mo","樱":"ying","橙":"cheng","次":"ci","欢":"huan","欧":"ou","款":"kuan","止":"zhi","正":"zheng","此":"ci","步":"bu","段":"duan","母":"mu","每":"mei","民":"min","气":"qi","水":"shui","永":"yong","汇":"hui","汽":"qi","没":"mei","油":"you","沿":"yan","法":"fa","注":"zhu","活":"huo","浅":"qian","测":"ce","济":"ji","浏":"liu","浮":"fu","海":"hai","消":"xiao","液":"ye","淘":"tao","深":"shen","添":"tian","清":"qing","渐":"jian","游":"you","源":"yuan","滑":"hua","火":"huo","灰":"hui","灵":"ling","点":"dian","焦":"jiao","然":"ran","煤":"mei","燃":"ran","片":"pian","版":"ban","牌":"pai","牛":"niu","物":"wu","状":"zhuang","狗":"gou","独":"du","猫":"mao","率":"lu","环":"huan","现":"xian","玻":"bo","球":"qiu","理":"li","璃":"li","生":"sheng","用":"yong","电":"dian","画":"hua","界":"jie","留":"liu","略":"lue","疗":"liao","登":"deng","白":"bai","的":"de","盖":"gai","盘":"pan","目":"mu","直":"zhi","相":"xiang","看":"kan","真":"zhen","瞬":"shun","知":"zhi","短":"duan","石":"shi","硬":"ying","确":"que","示":"shi","礼":"li","票":"piao","禁":"jin","离":"chi","私":"si","秋":"qiu","种":"chong","租":"zu","称":"cheng","移":"yi","程":"cheng","税":"shui","空":"kong","突":"tu","窗":"chuang","立":"li","站":"zhan","端":"duan","笑":"xiao","笔":"bi","符":"fu","等":"deng","筛":"shai","算":"suan","管":"guan","米":"mi","类":"lei","粉":"fen","精":"jing","糕":"gao","系":"xi","素":"su","索":"suo","紫":"zi","红":"hong","级":"ji","纪":"ji","线":"xian","组":"zu","细":"xi","终":"zhong","经":"jing","绑":"bang","结":"jie","绘":"hui","络":"luo","绝":"jue","统":"tong","继":"ji","续":"xu","维":"wei","绿":"lu","缓":"huan","编":"bian","缩":"suo","网":"wang","罪":"zui","置":"zhi","美":"mei","翰":"han","者":"zhe","职":"zhi","联":"lian","聚":"ju","育":"yu","背":"bei","胶":"xiao","能":"neng","脑":"nao","脚":"jiao","脸":"lian","腊":"la","自":"zi","至":"zhi","致":"zhi","航":"hang","色":"se","节":"jie","花":"hua","若":"ruo","英":"ying","范":"fan","茶":"cha","草":"cao","药":"yao","荷":"he","获":"huo","菜":"cai","落":"luo","蓄":"xu","蓝":"lan","蔬":"shu","薄":"bo","薰":"xun","藏":"cang","蛋":"dan","行":"xing","衣":"yi","补":"bu","表":"biao","被":"bei","要":"yao","覆":"fu","见":"jian","规":"gui","视":"shi","览":"lan","觉":"jue","角":"jiao","解":"jie","计":"ji","认":"ren","让":"rang","议":"yi","记":"ji","设":"she","访":"fang","证":"zheng","词":"ci","试":"shi","话":"hua","诞":"dan","该":"gai","误":"wu","说":"shuo","请":"qing","诸":"zhu","读":"du","调":"diao","谱":"pu","象":"xiang","负":"fu","财":"cai","败":"bai","账":"zhang","购":"gou","费":"fei","资":"zi","赖":"lai","起":"qi","超":"chao","趋":"qu","跃":"yue","距":"ju","跟":"gen","跨":"kua","跳":"tiao","身":"shen","车":"che","轨":"gui","转":"zhuan","轻":"qing","较":"jiao","辑":"ji","输":"shu","边":"bian","过":"guo","运":"yun","近":"jin","返":"fan","还":"huan","这":"zhe","进":"jin","连":"lian","迹":"ji","退":"tui","送":"song","适":"gua","选":"xuan","透":"tou","逐":"zhu","通":"tong","速":"su","造":"zao","逾":"yu","道":"dao","遮":"zhe","避":"bi","部":"bu","都":"du","配":"pei","酒":"jiu","采":"cai","释":"shi","里":"li","重":"zhong","金":"jin","针":"zhen","钮":"niu","钱":"qian","铁":"tie","银":"yin","链":"lian","销":"xiao","锅":"guo","错":"cuo","键":"jian","镑":"bang","镜":"jing","长":"chang","闭":"bi","问":"wen","闰":"run","间":"jian","防":"fang","阳":"yang","附":"fu","际":"ji","限":"xian","除":"chu","险":"xian","隆":"long","随":"sui","隐":"yin","隔":"ge","零":"ling","需":"xu","面":"mian","鞋":"xie","音":"yin","页":"ye","顶":"ding","项":"xiang","顺":"shun","须":"xu","预":"yu","题":"ti","颜":"yan","额":"e","风":"feng","飞":"fei","食":"shi","餐":"can","饭":"fan","饮":"yin","饱":"bao","馈":"kui","首":"shou","驱":"qu","高":"gao","黑":"hei","默":"mo","齐":"qi"};
+function txPinyinWords(value){
+ const text=String(value||'').toLowerCase();let full='',initial='';
+ for(const ch of text){const py=TX_PINYIN_MAP[ch];if(py){full+=py;initial+=py[0];}else if(/[a-z0-9]/.test(ch)){full+=ch;initial+=ch;}else{full+=' ';initial+=' ';}}
+ return {full:full.replace(/\s+/g,''),initial:initial.replace(/\s+/g,'')};
+}
+function txFuzzyMatch(value,query){
+ const q=String(query||'').trim().toLowerCase();if(!q)return true;
+ const text=String(value||'').toLowerCase();if(text.includes(q))return true;
+ if(!/^[a-z0-9]+$/.test(q))return false;
+ const py=txPinyinWords(text);return py.full.includes(q)||py.initial.includes(q);
+}
+function transactionMatchesQuery(t,q){
+ if(!q)return true;
+ return [t.note,t.category,t.subcategory,acct(t.account)?.name,acct(t.toAccount)?.name].some(v=>txFuzzyMatch(v,q));
+}
+function updateTransactionSuggestions(){
+ const input=document.getElementById('searchTx'),list=document.getElementById('txSearchSuggestions');if(!input||!list)return;
+ const q=input.value.trim().toLowerCase();
+ if(!q||document.activeElement!==input){list.hidden=true;list.innerHTML='';return;}
+ const values=new Set();
+ for(const type of ['expense','income'])for(const c of catSet(type)||[]){if(c.name)values.add(c.name);for(const sub of c.children||[])values.add(sub)}
+ for(const a of data.accounts||[])if(a.name)values.add(a.name);
+ for(const t of data.transactions||[])for(const v of [t.category,t.subcategory,t.note])if(v)values.add(v);
+ const matches=[...values].filter(v=>txFuzzyMatch(v,q)).slice(0,8);
+ list.innerHTML=matches.map((v,i)=>`<button type="button" class="tx-suggestion" data-index="${i}">${esc(v)}</button>`).join('');
+ list.hidden=!matches.length;
+ list.querySelectorAll('.tx-suggestion').forEach((b,i)=>b.addEventListener('pointerdown',e=>{e.preventDefault();selectTransactionSuggestion(matches[i]);}));
+}
+function selectTransactionSuggestion(value){
+ const input=document.getElementById('searchTx');if(!input)return;
+ input.value=value;document.getElementById('txSearchSuggestions').hidden=true;input.blur();renderTransactions();
+}
+document.addEventListener('click',e=>{const wrap=document.querySelector('.tx-search-wrap');if(wrap&&!wrap.contains(e.target)){const list=document.getElementById('txSearchSuggestions');if(list)list.hidden=true;}});
+
+function renderTransactions(){
+ const q=document.getElementById('searchTx').value.trim().toLowerCase(),tfilter=document.getElementById('txTypeFilter').value;
+ const acctFilter=document.getElementById('txAccountFilter'),old=acctFilter.value;
+ acctFilter.innerHTML='<option value="all">全部账户</option>'+data.accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('');
+ acctFilter.value=data.accounts.some(a=>a.id===old)?old:'all';
+ const mode=document.getElementById('txDateMode').value,start=document.getElementById('txDateStart').value,end=document.getElementById('txDateEnd').value;
+ let dateOK=t=>mode==='all'||(mode==='month'&&ym(t.date)===monthKey())||(mode==='day'&&!!start&&t.date===start)||(mode==='range'&&!!start&&!!end&&start<=end&&t.date>=start&&t.date<=end);
+ let arr=data.transactions.filter(t=>dateOK(t)&&(tfilter==='all'||t.type===tfilter)&&(acctFilter.value==='all'||t.account===acctFilter.value||t.toAccount===acctFilter.value)&&transactionMatchesQuery(t,q)).sort((a,b)=>b.date.localeCompare(a.date)||b.created.localeCompare(a.created));
+ updateTransactionSuggestions();
+ // 根据筛选结果自动汇总。还款和账户转账不会重复计入收入与支出。
+ const grouped={income:{},expense:{}};
+ for(const t of arr){
+  if(t.type!=='income'&&t.type!=='expense')continue;
+  const cur=t.currency||acct(t.account)?.currency||'EUR';
+  grouped[t.type][cur]=(grouped[t.type][cur]||0)+Number(t.amount||0);
+ }
+ const currencies=[...new Set([...Object.keys(grouped.income),...Object.keys(grouped.expense)])];
+ const order=['EUR','CNY','USD','GBP',...currencies.filter(c=>!['EUR','CNY','USD','GBP'].includes(c))].filter((c,i,a)=>currencies.includes(c)&&a.indexOf(c)===i);
+ const fmt=type=>order.length?order.map(c=>`<span>${money(grouped[type][c]||0,false,c)}</span>`).join(''):'<span>€0.00</span>';
+ document.getElementById('txSummary').innerHTML=`<div class="tx-summary-item income"><div class="tx-summary-label">筛选收入合计</div><div class="tx-summary-amount">${fmt('income')}</div></div><div class="tx-summary-item expense"><div class="tx-summary-label">筛选支出合计</div><div class="tx-summary-amount">${fmt('expense')}</div></div><div class="tx-summary-hint">按原币种分别汇总；信用卡还款及账户转账不计入收支。</div>`;
+ document.getElementById('txCount').textContent=arr.length+' 笔';
+ document.getElementById('txList').innerHTML=mode==='range'&&start&&end&&start>end?'<div class="empty">结束日期不能早于开始日期</div>':arr.length?arr.map(txHTML).join(''):'<div class="empty">没有符合条件的交易</div>';
+}
 // V109 双国节日：意大利公历+复活节，中国公历+农历。节日 ≠ 官方放假/调休安排。
 const HOLIDAY_CN_FIXED={'01-01':'元旦','05-01':'劳动节','10-01':'国庆节'};
 const HOLIDAY_IT_FIXED={'01-01':'元旦（Capodanno）','01-06':'主显节（Epifania）','04-25':'解放日（Liberazione）','05-01':'劳动节（Festa del Lavoro）','06-02':'共和国日（Festa della Repubblica）','08-15':'圣母升天节（Ferragosto）','11-01':'诸圣节（Ognissanti）','12-08':'圣母无染原罪节（Immacolata）','12-25':'圣诞节（Natale）','12-26':'圣斯德望节（Santo Stefano）'};
@@ -980,17 +1081,39 @@ function selectDay(d){selectedDay=d;renderCalendar()}function renderDay(){docume
 function renderBudgets(){let entries=expenseCats.map(([n,icon])=>{let spent=total(monthly('expense').filter(t=>t.category===n)),budget=Number(data.budgets[n]||0);return {n,icon,spent,budget}});let active=entries.filter(e=>e.budget);document.getElementById('budgetList').innerHTML=active.length?active.map(e=>`<div class="budgetrow"><div class="spread"><b>${e.icon} ${esc(e.n)}</b><button class="link" onclick="openBudget('${esc(e.n)}')">修改</button></div><div class="spread" style="margin-top:12px"><b>${money(e.spent)}</b><span class="dim">预算 ${money(e.budget)} · ${Math.round(e.spent/e.budget*100)}%</span></div><div class="progress ${e.spent>e.budget?'warn':''}"><div style="width:${Math.min(100,e.spent/e.budget*100)}%"></div></div></div>`).join(''):'<div class="empty">还没有预算，点击「设置预算」为分类设置每月限额</div>'}
 function creditDue(aid){const a=acct(aid);if(!a||a.kind!=='credit')return 0;const due=Number(a.initial||0)+data.transactions.reduce((sum,t)=>sum+(t.type==='expense'&&t.account===aid?Number(t.amount):0)-(t.type==='repayment'&&t.toAccount===aid?Number(t.amount):0),0);return Math.round(due*100)/100}
 function balance(aid){let a=acct(aid);if(!a)return 0;if(a.kind==='credit')return creditDue(aid);return Number(a.initial)+data.transactions.reduce((sum,t)=>sum+(t.type==='income'&&t.account===aid?Number(t.amount):0)-(t.type==='expense'&&t.account===aid?Number(t.amount):0)-(t.type==='repayment'&&t.account===aid?Number(t.amount):0)+(t.type==='transfer'&&t.toAccount===aid?Number(t.toAmount??t.amount):0)-(t.type==='transfer'&&t.account===aid?Number(t.amount):0),0)}
-function creditDeadlineInfo(a){
- const date=a.dueDate||'';if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return {label:'未设置截止日期',cls:'unset'};
- const [y,m,d]=date.split('-').map(Number),dt=new Date(y,m-1,d),now=new Date();now.setHours(0,0,0,0);
- if(dt.getFullYear()!==y||dt.getMonth()!==m-1||dt.getDate()!==d)return {label:'截止日期无效',cls:'unset'};
- const days=Math.round((dt-now)/86400000),display=`${m}月${d}日`;
- if(creditDue(a.id)<=0)return {label:`截止 ${display} · 已还清`,cls:'paid'};
- return days<0?{label:`截止 ${display} · 已逾期 ${-days} 天`,cls:'urgent'}:days===0?{label:`截止 ${display} · 今天到期`,cls:'urgent'}:days<=3?{label:`截止 ${display} · 还剩 ${days} 天`,cls:'urgent'}:{label:`截止 ${display} · 还剩 ${days} 天`,cls:'normal'};
+// V112: 每月固定还款日 + 单次截止日，所有倒计时使用本地日历日期，避免夏令时差异。
+function creditDateParts(date){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))return null;
+ const [y,m,d]=date.split('-').map(Number),dt=new Date(y,m-1,d);
+ return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d?{y,m,d}:null;
 }
-function renderCreditSummary(){const el=document.getElementById('creditSummary'),cards=data.accounts.filter(a=>a.kind==='credit');if(!cards.length){el.style.display='none';return}el.style.display='block';const sums={};cards.forEach(a=>sums[a.currency||'EUR']=(sums[a.currency||'EUR']||0)+creditDue(a.id));el.innerHTML=`<div class="credit-head"><b class="cardtitle">💳 信用卡待还</b><button class="link" onclick="switchTab('accounts')">管理信用卡</button></div><div class="credit-totals">${Object.entries(sums).map(([cur,n])=>`<div><div class="subtle">${esc(cur)} 待还总额</div><strong>${money(n,false,cur)}</strong></div>`).join('')}</div>${cards.map(a=>`<div class="credit-item"><span class="credit-item-name">${esc(a.icon||'💳')} ${esc(a.name)}<small class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</small></span><button class="link credit-setting" onclick="openCreditDueSettings('${a.id}')">设置待还</button><button class="link credit-repay credit-repay-raised" onclick="openRepayment('${a.id}')">还款</button></div>`).join('')}<p class="smallnote">信用卡消费计入支出；还款只减少待还，不重复计入支出。</p>`;el.insertAdjacentHTML('afterbegin','<button type="button" class="home-drag-handle" title="按住拖动调整模块位置" aria-label="按住拖动信用卡待还模块">☰</button>')}
+function creditNextDue(a,now=new Date()){
+ const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ const fixed=Number(a.dueDay||0);
+ if(Number.isInteger(fixed)&&fixed>=1&&fixed<=31){
+  let y=today.getFullYear(),m=today.getMonth();
+  const make=(yy,mm)=>new Date(yy,mm,Math.min(fixed,new Date(yy,mm+1,0).getDate()));
+  let next=make(y,m);if(next<today)next=make(y,m+1);
+  return {date:next,recurring:true};
+ }
+ const parts=creditDateParts(a.dueDate);if(!parts)return null;
+ return {date:new Date(parts.y,parts.m-1,parts.d),recurring:false};
+}
+function creditDeadlineInfo(a){
+ const next=creditNextDue(a);
+ if(!next)return {label:'未设置还卡日',cls:'unset'};
+ const today=new Date();today.setHours(0,0,0,0);
+ const dt=next.date;
+ // 将本地日历的日期转换为 UTC 午夜，避免夏令时造成天数偏差。
+ const days=Math.round((Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())-Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
+ const display=`${dt.getMonth()+1}月${dt.getDate()}日`;
+ const prefix=next.recurring?'每月还款 · ':'还款截止 · ';
+ const suffix=days===0?'今天到期':days>0?`还剩 ${days} 天`:`已逾期 ${-days} 天`;
+ return {label:`${prefix}${display} · ${suffix}`,cls:days<=3?'urgent':'normal'};
+}
+function renderCreditSummary(){const el=document.getElementById('creditSummary'),cards=data.accounts.filter(a=>a.kind==='credit');if(!cards.length){el.style.display='none';return}el.style.display='block';const sums={};cards.forEach(a=>sums[a.currency||'EUR']=(sums[a.currency||'EUR']||0)+creditDue(a.id));el.innerHTML=`<div class="credit-head"><b class="cardtitle">💳 信用卡待还</b><button class="link" onclick="switchTab('accounts')">管理信用卡</button></div><div class="credit-totals">${Object.entries(sums).map(([cur,n])=>`<div><div class="subtle">${esc(cur)} 待还总额</div><strong>${money(n,false,cur)}</strong></div>`).join('')}</div>${cards.map(a=>`<div class="credit-item"><span class="credit-item-name">${esc(a.icon||'💳')} ${esc(a.name)}<small class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</small></span><button class="link credit-setting" onclick="openCreditDueSettings('${a.id}')">设置还卡日</button><button class="link credit-repay credit-repay-raised" onclick="openRepayment('${a.id}')">还款</button></div>`).join('')}<p class="smallnote">信用卡消费计入支出；还款只减少待还，不重复计入支出。</p>`;el.insertAdjacentHTML('afterbegin','<button type="button" class="home-drag-handle" title="按住拖动调整模块位置" aria-label="按住拖动信用卡待还模块">☰</button>')}
 
-function renderAccounts(){document.getElementById('accountGrid').innerHTML=data.accounts.length?data.accounts.map(a=>`<div class="account" data-account-id="${esc(a.id)}"><div class="spread"><span style="font-weight:700">${a.icon||'💳'} ${esc(a.name)} <span class="dim">${a.currency||'EUR'}${a.kind==='credit'?' · 信用卡':''}</span></span><button class="link" onclick="openAccount('${a.id}')">编辑</button><button type="button" class="draghandle accountdrag" aria-label="按住拖动排序 ${esc(a.name)}" title="按住拖动排序">☰</button></div><div class="balance">${a.kind==='credit'?'待还 ':''}${money(balance(a.id),false,a.currency||'EUR')}</div><div class="dim">${a.kind==='credit'?'初始待还':'初始余额'} ${money(a.initial,false,a.currency||'EUR')}</div>${a.kind==='credit'?`<div class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn small" onclick="openCreditDueSettings('${a.id}')">设置待还金额</button><button class="btn small" onclick="openRepayment('${a.id}')">信用卡还款</button></div>`:''}</div>`).join(''):'<div class="empty">还没有付款/收款方式</div>'}
+function renderAccounts(){document.getElementById('accountGrid').innerHTML=data.accounts.length?data.accounts.map(a=>`<div class="account" data-account-id="${esc(a.id)}"><div class="spread"><span style="font-weight:700">${a.icon||'💳'} ${esc(a.name)} <span class="dim">${a.currency||'EUR'}${a.kind==='credit'?' · 信用卡':''}</span></span><button class="link" onclick="openAccount('${a.id}')">编辑</button><button type="button" class="draghandle accountdrag" aria-label="按住拖动排序 ${esc(a.name)}" title="按住拖动排序">☰</button></div><div class="balance">${a.kind==='credit'?'待还 ':''}${money(balance(a.id),false,a.currency||'EUR')}</div><div class="dim">${a.kind==='credit'?'初始待还':'初始余额'} ${money(a.initial,false,a.currency||'EUR')}</div>${a.kind==='credit'?`<div class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn small" onclick="openCreditDueSettings('${a.id}')">设置还卡日</button><button class="btn small" onclick="openRepayment('${a.id}')">信用卡还款</button></div>`:''}</div>`).join(''):'<div class="empty">还没有付款/收款方式</div>'}
 function renderReports(){document.getElementById('repIncome').textContent=money(total(monthly('income')));document.getElementById('repExpense').textContent=money(total(monthly('expense')));drawRank(summarizeCats('expense'),'expenseRank');drawRank(summarizeCats('income'),'incomeRank');let byDate={};for(let t of data.transactions.filter(t=>ym(t.date)===monthKey()&&['income','expense'].includes(t.type))){if(!byDate[t.date])byDate[t.date]={income:0,expense:0};byDate[t.date][t.type]+=convert(Number(t.amount),t.currency||'EUR',data.currency)}document.getElementById('dailyReport').innerHTML=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([d,v])=>`<div class="budgetrow spread"><b>${d}</b><span><span class="green">+${money(v.income)}</span>　<span class="red">-${money(v.expense)}</span></span></div>`).join('')||'<div class="empty">本月暂无收支记录</div>'}
 function modal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modalWrap').classList.add('open')}function closeModal(){document.getElementById('modalWrap').classList.remove('open')};function showDialog(html){document.getElementById('dialogContent').innerHTML=html;document.getElementById('dialogWrap').classList.add('open')}function closeDialog(){document.getElementById('dialogWrap').classList.remove('open');document.getElementById('dialogContent').innerHTML=''}document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDialog();closeModal()}});function toast(msg,title='操作成功',icon='✓'){let e=document.getElementById('toast');e.innerHTML=`<div class="toast-icon">${icon}</div><div class="toast-text"><b>${title}</b><span>${msg}</span></div>`;e.style.display='flex';requestAnimationFrame(()=>e.classList.add('show'));clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>{e.classList.remove('show');setTimeout(()=>{e.style.display='none';e.innerHTML=''},180)},1800)}
 function syncEntryDate(){const field=document.getElementById('fDate'),label=document.getElementById('fDateText');if(field&&label)label.textContent=field.value||'请选择日期'}
@@ -1265,20 +1388,56 @@ function syncRepaymentDate(){const field=document.getElementById('repDate'),labe
 function repaymentError(msg){const el=document.getElementById('repaymentError');if(el){el.textContent=msg;el.style.display='block'}else toast(msg,'无法保存','!');return false}
 function openCreditDueSettings(creditId){
  const card=acct(creditId);if(!card||card.kind!=='credit')return;
- modal(`<div class="modalhead"><h2>设置待还金额</h2><button type="button" class="close" onclick="closeModal()">✕</button></div><p class="smallnote">${esc(card.name)} · ${esc(card.currency||'EUR')}</p><label class="formlabel">当前实际待还总额</label><input id="creditDueInput" class="field amountinput" type="number" inputmode="decimal" step="0.01" min="0" value="${creditDue(card.id).toFixed(2)}"><label class="formlabel" for="creditDueDate">还款截止日期（选填）</label><input id="creditDueDate" class="field" type="date" value="${esc(card.dueDate||'')}"><p class="smallnote">选择本期信用卡还款的截止日期，之后可以随时修改或清空。到期提醒只在 App 内显示。</p><p class="smallnote">直接将待还金额调整为实际欠款数额，不会产生新的收入或支出记录。已有消费和还款交易仍会保留。</p><p id="creditDueError" class="inline-warning" style="display:none" role="alert"></p><div class="modalfooter"><button type="button" class="btn" onclick="closeModal()">取消</button><button type="button" class="btn primary" onclick="saveCreditDueSettings('${card.id}')">保存待还金额</button></div>`);
+ const fixed=Number(card.dueDay||0),isFixed=Number.isInteger(fixed)&&fixed>=1&&fixed<=31;
+ const mode=isFixed?'monthly':creditDateParts(card.dueDate)?'once':'monthly';
+ const date=creditDateParts(card.dueDate)?card.dueDate:'';
+ const days=Array.from({length:31},(_,i)=>`<option value="${i+1}" ${(isFixed?fixed:15)===i+1?'selected':''}>每月 ${i+1} 日</option>`).join('');
+ modal(`<div class="modalhead"><h2>设置还卡日</h2><button type="button" class="close" onclick="closeModal()">✕</button></div>
+ <p class="smallnote">${esc(card.name)} · ${esc(card.currency||'EUR')}</p>
+ <label class="formlabel" for="creditDueMode">还款日类型</label>
+ <select class="field" id="creditDueMode" onchange="toggleCreditDueMode()"><option value="monthly" ${mode==='monthly'?'selected':''}>每月固定还款日</option><option value="once" ${mode==='once'?'selected':''}>单次还款截止日期</option><option value="none">不设置还卡日</option></select>
+ <div id="creditMonthlyArea"><label class="formlabel" for="creditDueDay">每月几号还款</label><select class="field" id="creditDueDay">${days}</select><p class="smallnote">每月自动计算下一次还款日。选择 29～31 日时，较短月份以最后一天为准。</p></div>
+ <div id="creditOnceArea"><label class="formlabel" for="creditDueDate">还款截止日期</label><div class="date-display-wrap"><span class="date-display-text" id="creditDueDateText">${esc(date||'请选择日期')}</span><span class="date-display-icon" aria-hidden="true">▣</span><input id="creditDueDate" class="date-picker-overlay" type="date" aria-label="选择还卡日期" value="${esc(date)}" onchange="syncCreditDueDate()"></div></div>
+ <p class="smallnote">保存后首页信用卡模块将显示还款日和倒计时。倒计时只在 App 内显示，不会发送系统推送通知。修改还款日不会改变待还金额。</p>
+ <p id="creditDueError" class="inline-warning" style="display:none" role="alert"></p>
+ <div class="modalfooter">${(isFixed||date)?`<button type="button" class="btn" style="color:var(--red)" onclick="confirmClearCreditDueSettings('${card.id}')">清除还卡日</button>`: ''}<button type="button" class="btn" onclick="closeModal()">取消</button><button type="button" class="btn primary" onclick="saveCreditDueSettings('${card.id}')">保存还卡日</button></div>`);
+ toggleCreditDueMode();
+}
+function syncCreditDueDate(){
+ const input=document.getElementById('creditDueDate'),label=document.getElementById('creditDueDateText');
+ if(input&&label)label.textContent=input.value||'请选择日期';
+}
+function confirmClearCreditDueSettings(creditId){
+ const card=acct(creditId);if(!card||card.kind!=='credit')return;
+ showDialog(`<h3>清除还卡日？</h3><p>将移除「${esc(card.name)}」的还款日期与倒计时，不会删除交易记录或改变待还余额。</p><div class="dialogactions"><button type="button" class="btn" onclick="closeDialog()">取消</button><button type="button" class="btn danger" onclick="clearCreditDueSettingsConfirmed('${card.id}')">确认清除</button></div><div id="creditClearError" class="dialogerror" style="display:none" role="alert"></div>`);
+}
+function clearCreditDueSettingsConfirmed(creditId){
+ const card=acct(creditId);if(!card||card.kind!=='credit')return;
+ const previous={dueDay:card.dueDay,dueDate:card.dueDate};card.dueDay=null;card.dueDate='';
+ try{save()}catch(e){card.dueDay=previous.dueDay;card.dueDate=previous.dueDate;const error=document.getElementById('creditClearError');if(error){error.textContent='清除失败：'+(e?.message||e);error.style.display='block'}return}
+ closeDialog();closeModal();render();toast('还卡日已清除。','设置成功','✓');
+}
+function toggleCreditDueMode(){
+ const mode=document.getElementById('creditDueMode')?.value;
+ const monthly=document.getElementById('creditMonthlyArea'),once=document.getElementById('creditOnceArea');
+ if(monthly)monthly.style.display=mode==='monthly'?'block':'none';
+ if(once)once.style.display=mode==='once'?'block':'none';
 }
 function saveCreditDueSettings(creditId){
- const card=acct(creditId),input=document.getElementById('creditDueInput'),err=document.getElementById('creditDueError');
+ const card=acct(creditId),err=document.getElementById('creditDueError');
  const fail=m=>{if(err){err.textContent=m;err.style.display='block'}return false};
  if(!card||card.kind!=='credit')return fail('信用卡账户不存在。');
- const raw=input?.value,target=Number(raw);if(raw===''||!Number.isFinite(target)||target<0||target>999999999999)return fail('请输入有效的非负金额。');
- const date=document.getElementById('creditDueDate')?.value||'';
- if(date&&!/^\d{4}-\d{2}-\d{2}$/.test(date))return fail('请选择有效的截止日期。');
- const delta=Math.round((target-creditDue(card.id))*100)/100,oldInitial=card.initial,oldDueDate=card.dueDate;
- card.initial=Math.round((Number(card.initial||0)+delta)*100)/100;
- card.dueDate=date;
- try{save()}catch(e){card.initial=oldInitial;card.dueDate=oldDueDate;return fail('保存失败：'+(e?.message||e))}
- closeModal();try{render()}catch(e){console.error(e)}toast('信用卡当前待还金额已更新。','设置成功','✓');return true;
+ const mode=document.getElementById('creditDueMode')?.value;
+ const day=Number(document.getElementById('creditDueDay')?.value),date=document.getElementById('creditDueDate')?.value||'';
+ if(mode==='monthly'&&(!Number.isInteger(day)||day<1||day>31))return fail('请选择每月还款日期。');
+ if(mode==='once'&&!creditDateParts(date))return fail('请选择有效的还款截止日期。');
+ const previous={dueDay:card.dueDay,dueDate:card.dueDate};
+ if(mode==='monthly'){card.dueDay=day;card.dueDate='';}
+ else if(mode==='once'){card.dueDay=null;card.dueDate=date;}
+ else if(mode==='none'){card.dueDay=null;card.dueDate='';}
+ else return fail('请选择还款日类型。');
+ try{save()}catch(e){card.dueDay=previous.dueDay;card.dueDate=previous.dueDate;return fail('保存失败：'+(e?.message||e))}
+ closeModal();render();toast('还款日已更新。','设置成功','✓');return true;
 }
 function openRepayment(creditId,editId=null){
  const card=acct(creditId);if(!card||card.kind!=='credit')return;
@@ -1324,7 +1483,22 @@ function saveRepayment(e){
   editingRepaymentId=null;closeModal();try{render()}catch(error){console.error('还款已保存，页面刷新失败',error)}toast('信用卡还款已成功记录。','还款已保存','✓');return true;
  }catch(error){console.error('信用卡还款失败',error);return repaymentError('还款处理失败：'+(error?.message||error))}
 }
-function deleteRepayment(){if(!editingRepaymentId||!confirm('确定删除这条信用卡还款记录？'))return;data.transactions=data.transactions.filter(t=>t.id!==editingRepaymentId);editingRepaymentId=null;save();closeModal();render();toast('还款记录已删除')}
+function deleteRepayment(){
+ const tx=data.transactions.find(t=>t.id===editingRepaymentId&&t.type==='repayment');
+ if(!tx){repaymentError('找不到这条还款记录，请重新打开交易。');return;}
+ showDialog(`<div class="dialogicon">🗑️</div><h3>确认删除信用卡还款？</h3><p>确定删除这笔 ${money(tx.amount,false,tx.currency||'EUR')} 的还款记录吗？删除后，信用卡待还金额和付款账户余额会自动重新计算。此操作无法撤销。</p><div class="dialogactions"><button class="btn" type="button" onclick="closeDialog()">取消</button><button class="btn danger" type="button" onclick="confirmDeleteRepayment()">确定删除</button></div><div id="deleteRepaymentError" class="dialogerror" role="alert" style="display:none"></div>`);
+}
+function confirmDeleteRepayment(){
+ const tx=data.transactions.find(t=>t.id===editingRepaymentId&&t.type==='repayment');
+ if(!tx){const err=document.getElementById('deleteRepaymentError');if(err){err.textContent='该还款记录已不存在。';err.style.display='block';}return;}
+ const previousTransactions=data.transactions;
+ data.transactions=previousTransactions.filter(t=>t.id!==tx.id);
+ try{save()}catch(error){data.transactions=previousTransactions;const err=document.getElementById('deleteRepaymentError');if(err){err.textContent='删除失败：'+(error?.message||error);err.style.display='block';}return;}
+ editingRepaymentId=null;
+ closeDialog();closeModal();
+ try{render()}catch(error){console.error('还款已删除，界面刷新失败',error)}
+ toast('还款记录已删除，待还金额和账户余额已重新计算。');
+}
 function editRates(){modal(`<div class="modalhead"><h2>手动设置汇率</h2><button class="close" onclick="closeModal()">✕</button></div><p class="smallnote">仅用于图表和汇总折算；已有交易金额和账户余额不变。请自行核对所需汇率。</p><form onsubmit="saveRates(event)">${[['CNY','人民币'],['USD','美元'],['GBP','英镑']].map(([c,n])=>`<label class="formlabel">1 EUR = ? ${n} (${c})</label><input class="field" id="rate${c}" type="number" step="any" min="0.000001" required value="${data.rates[c]}">`).join('')}<div class="modalfooter"><button class="btn" type="button" onclick="closeModal()">取消</button><button class="btn primary">保存汇率</button></div></form>`)}
 function saveRates(e){e.preventDefault();for(const c of ['CNY','USD','GBP']){const v=Number(document.getElementById('rate'+c).value);if(!Number.isFinite(v)||v<=0)return toast('汇率必须大于零');data.rates[c]=v}save();closeModal();render();toast('汇率已更新')}
 function changeCurrency(c){data.currency=c;save();render();toast('汇总金额已按设置汇率折算，原始记录不变')};
@@ -1377,6 +1551,7 @@ function confirmWipeData(){
  const old=data;try{data=defaultData();save();closeModal();applyTheme();if(tab==='settings')renderThemeSettings();render();toast('全部数据已清空');}catch(err){data=old;const el=document.getElementById('wipeError');if(el)el.textContent='清空失败：'+(err?.message||'浏览器存储不可用');}
 }
 
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){try{render()}catch(e){console.error(e)}}});
 window.ledgerGetData=()=>data;window.ledgerDefaultData=()=>defaultData();window.ledgerSetData=(v)=>{data=v;migrateCategories();localStorage.setItem(KEY,JSON.stringify(data));applyTheme();render();if(tab==='settings')renderThemeSettings()};makeNav();applyTheme();render();
 
 // 仅记录模块的顺序，不修改交易数据或账本设置。
