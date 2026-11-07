@@ -3,7 +3,6 @@
 <head>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
-</head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#101c30"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>记一笔 · 日常记账</title>
 <style>
@@ -14,7 +13,7 @@
 @media(max-width:800px){.theme-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.theme-color-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.theme-color-grid{grid-template-columns:1fr}}
 
-<style>.credit-summary{margin-top:18px;border:1px solid var(--line);background:var(--card)}.credit-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.credit-totals{display:flex;gap:24px;flex-wrap:wrap;margin:12px 0 4px}.credit-totals strong{font-size:25px;color:var(--text)}.credit-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid var(--line)}.credit-debt{color:var(--red);font-weight:800}.credit-summary .link{white-space:nowrap}
+.credit-summary{margin-top:18px;border:1px solid var(--line);background:var(--card)}.credit-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.credit-totals{display:flex;gap:24px;flex-wrap:wrap;margin:12px 0 4px}.credit-totals strong{font-size:25px;color:var(--text)}.credit-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid var(--line)}.credit-debt{color:var(--red);font-weight:800}.credit-summary .link{white-space:nowrap}
 .date-display-wrap{height:50px;border:1px solid #e3e9f2;border-radius:12px;background:var(--card);color:var(--text);display:flex;align-items:center;justify-content:space-between;padding:0 13px;position:relative;cursor:pointer;overflow:hidden}
 .date-display-text{font-size:16px;white-space:nowrap;letter-spacing:.2px}
 .date-display-icon{font-size:21px;line-height:1}
@@ -81,7 +80,7 @@
 </style>
 
 <style>.sub-placeholder{color:#9aa5b6!important}.sub-placeholder option{color:var(--text)}.categorymanage{max-height:53vh;overflow:auto;margin-top:13px}.managecat{padding:13px 0;border-bottom:1px solid var(--line)}.managebuttons{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}.managebuttons .btn.small{padding:5px 8px}.submanage{margin:9px 0 0 12px;padding:8px 10px;border-radius:11px;background:#f7f8fc}.subrow{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:5px 0;border-bottom:1px solid #e9edf4;font-size:12px}.subrow:last-of-type{border:0}.subrow span{overflow-wrap:anywhere}.managecat>.spread{align-items:flex-start}.managecat b{max-width:45%;overflow-wrap:anywhere}@media(max-width:500px){.managebuttons .btn.small{padding:5px 6px;font-size:11px}.managecat>.spread{gap:5px}.modal{padding:17px}}
-<style>.credit-summary{margin-top:18px;border:1px solid var(--line);background:var(--card)}.credit-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.credit-totals{display:flex;gap:24px;flex-wrap:wrap;margin:12px 0 4px}.credit-totals strong{font-size:25px;color:var(--text)}.credit-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid var(--line)}.credit-debt{color:var(--red);font-weight:800}.credit-summary .link{white-space:nowrap}</style><style>
+.credit-summary{margin-top:18px;border:1px solid var(--line);background:var(--card)}.credit-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.credit-totals{display:flex;gap:24px;flex-wrap:wrap;margin:12px 0 4px}.credit-totals strong{font-size:25px;color:var(--text)}.credit-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid var(--line)}.credit-debt{color:var(--red);font-weight:800}.credit-summary .link{white-space:nowrap}</style><style>
 .entrybar{display:flex;align-items:center;justify-content:center;gap:12px;left:max(266px,calc((100vw - 1250px)/2 + 266px));right:max(36px,calc((100vw - 1250px)/2 + 36px));bottom:20px;height:60px;border:1px solid #ffffff2b;border-radius:18px;font-size:19px;font-weight:750;letter-spacing:1px;box-shadow:0 10px 26px #253d9840;transition:transform .15s ease,filter .15s ease;touch-action:manipulation}
 .entrybar:active{transform:scale(.987);filter:brightness(.96)}.entrybar:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .entrybar-plus{font-size:24px;font-weight:600;width:33px;height:33px;display:grid;place-items:center;background:#ffffff25;border:1px solid #ffffff30;border-radius:11px;line-height:1}
@@ -814,13 +813,13 @@ function saveHomeOrder(){
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,doc,getDoc,runTransaction,onSnapshot} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
-const firebaseConfig={
- apiKey:'AIzaSyBtbD7mHT5UiGVLQJbWG3txOiDBLhJszAA',
- authDomain:'fitness-calendar-b637c.firebaseapp.com',
- projectId:'fitness-calendar-b637c',
- storageBucket:'fitness-calendar-b637c.firebasestorage.app',
- messagingSenderId:'1050030904981',
- appId:'1:1050030904981:web:390c0626b4eaaf49d4ed9c'
+const firebaseConfig = {
+  apiKey: "AIzaSyBtbD7mHI5UiGVLQJbWG3txQidBLhJszAA",
+  authDomain: "fitness-calendar-b637c.firebaseapp.com",
+  projectId: "fitness-calendar-b637c",
+  storageBucket: "fitness-calendar-b637c.firebasestorage.app",
+  messagingSenderId: "1050030904981",
+  appId: "1:1050030904981:web:390c0626b4eaaf49d4ed9c"
 };
 const auth=getAuth(initializeApp(firebaseConfig)),db=getFirestore(),provider=new GoogleAuthProvider();
 const KEY='shiguang_ledger_v1',LOCAL_OWNER_KEY='jiyibi_cloud_last_account_v1';
