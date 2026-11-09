@@ -2199,96 +2199,62 @@ function renderCreditSummary(){const el=document.getElementById('creditSummary')
 
 function renderAccounts(){document.getElementById('accountGrid').innerHTML=data.accounts.length?data.accounts.map(a=>`<div class="account" data-account-id="${esc(a.id)}"><div class="spread"><div class="account-identity"><div class="account-identity-name"><span class="account-identity-icon">${a.icon||'💳'}</span><span>${esc(a.name)}</span></div><div class="account-identity-currency">${esc(a.currency||'EUR')}${a.kind==='credit'?' · 信用卡':''}</div></div><button class="link" onclick="openAccount('${a.id}')">编辑</button><button type="button" class="draghandle accountdrag" aria-label="按住拖动排序 ${esc(a.name)}" title="按住拖动排序">☰</button></div><div class="balance">${a.kind==='credit'?'待还 ':''}${money(balance(a.id),false,a.currency||'EUR')}</div><div class="dim">${a.kind==='credit'?'初始待还':'初始余额'} ${money(a.initial,false,a.currency||'EUR')}</div>${a.kind==='credit'?`<div class="credit-date ${creditDeadlineInfo(a).cls}">${esc(creditDeadlineInfo(a).label)}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn small" onclick="openCreditDueSettings('${a.id}')">设置还卡日</button><button class="btn small" onclick="openRepayment('${a.id}')">信用卡还款</button></div>`:''}</div>`).join(''):'<div class="empty">还没有付款/收款方式</div>'}
 
-// 欧元现钞买入价来源：中国银行官方外汇牌价（中国人民银行不发布银行现钞买入价）。
-// 官方报价为每 100 欧元折合多少人民币，除以 100 后得 1 EUR 对 CNY。
-// 浏览器跨域限制时经由公开 CORS 代理读取官方网页；失败时只采用最近缓存，不假装已更新。
-const REPORT_BOC_CACHE_KEY='jiyibi_report_boc_cash_buy_eur_cny_v1';
-const reportBocRate={value:7.4142,date:'2026-11-08',time:'10:30:00',fallback:true,attempted:false,source:'预置参考值'};
+// 欧洲央行每日 EUR/CNY 参考汇率。GitHub Actions 把官方 XML 写入同源 ecb-rates.json。
+// 页面只读取同源 JSON，避免跨域代理；断网时使用最近一次成功缓存。
+const REPORT_ECB_CACHE_KEY='jiyibi_report_ecb_eur_cny_v1';
+const reportBocRate={value:7.4142,date:'',time:'',fallback:true,attempted:false,source:'预置参考值',error:'尚未读取到欧洲央行数据'};
 try{
- const old=JSON.parse(localStorage.getItem(REPORT_BOC_CACHE_KEY)||'null');
+ const old=JSON.parse(localStorage.getItem(REPORT_ECB_CACHE_KEY)||'null');
  if(old&&Number.isFinite(Number(old.value))&&Number(old.value)>0&&/^\d{4}-\d{2}-\d{2}$/.test(old.date)){
-  reportBocRate.value=Number(old.value);reportBocRate.date=old.date;
-  reportBocRate.time=old.time||'';reportBocRate.source='本机缓存';
+  Object.assign(reportBocRate,{value:Number(old.value),date:old.date,time:old.time||'',source:'上次成功缓存',fallback:true,error:'等待检查更新'});
  }
 }catch(e){}
 let reportRateFetchPromise=null;
-const REPORT_RATE_REFRESH_MS=24*60*60*1000;
+const REPORT_RATE_REFRESH_MS=60*60*1000;
 let reportRateLastCheck=0;
-
-function parseBocCashBuyHtml(page){
- const doc=new DOMParser().parseFromString(page,'text/html');
- if(!doc.body||!doc.body.textContent.includes('现钞买入价'))throw Error('页面缺少现钞买入价表头');
- for(const tr of doc.querySelectorAll('tr')){
-  const cells=[...tr.querySelectorAll('td')].map(el=>(el.textContent||'').replace(/\s+/g,' ').trim());
-  if(cells.length<7||!/^欧元(?:\s|$)/.test(cells[0]))continue;
-  // 中国银行：货币名称、现汇买入价、现钞买入价、现汇卖出价、现钞卖出价、折算价、日期、时间
-  const quoted=Number(cells[2].replace(/,/g,''));
-  const day=(cells[6]||'').replace(/\//g,'-').trim();
-  const hour=(cells[7]||'').trim();
-  if(!(quoted>400&&quoted<1500)||!/^\d{4}-\d{2}-\d{2}$/.test(day))continue;
-  return {value:quoted/100,date:day,time:hour};
- }
- throw Error('未找到中国银行欧元现钞买入价');
-}
-async function fetchBocCashBuy(){
- const official='https://www.boc.cn/sourcedb/whpj/';
- const endpoints=[
-  official,
-  'https://api.allorigins.win/raw?url='+encodeURIComponent(official),
-  'https://corsproxy.io/?url='+encodeURIComponent(official)
- ];
- for(const url of endpoints){
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),8000);
-  try{
-   const response=await fetch(url,{cache:'no-store',signal:controller.signal});
-   if(!response.ok)throw Error('HTTP '+response.status);
-   const buffer=await response.arrayBuffer();
-   // 中国银行网页可能使用 GBK；代理有时转为 UTF-8。
-   let page=new TextDecoder('utf-8').decode(buffer);
-   if(!page.includes('欧元')||!page.includes('现钞买入价')){
-    page=new TextDecoder('gb18030').decode(buffer);
-   }
-   return parseBocCashBuyHtml(page);
-  }catch(e){}finally{clearTimeout(timer);}
- }
- throw Error('官方牌价页面或跨域代理暂不可用');
-}
-function reportBocRateText(){
- const status=reportBocRate.fallback?' · 最近保存或预置值，未成功联网更新':' · 已联网更新';
- return '进度条按欧元等值计算';
-}
+function reportBocRateText(){return '进度条按欧洲央行 EUR/CNY 参考汇率折算欧元（不代表实际银行兑换价）';}
 function updateHeroFxRate(){
  const value=document.getElementById('heroFxCny'),wrap=document.getElementById('heroFxRate');
  if(!value||!wrap)return;
  const quote=Number(reportBocRate.value);
  value.textContent=Number.isFinite(quote)&&quote>0?(quote*100).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
- wrap.title=`中国银行欧元现钞买入价 · ${reportBocRate.date||'日期未知'}${reportBocRate.fallback?' · 尚未成功更新到最新牌价':''}`;
+ const name=reportBocRate.source==='预置参考值'?'预置参考值（非实时）':'欧洲央行 EUR/CNY 参考汇率';
+ const date=reportBocRate.date?` · 牌价日期 ${reportBocRate.date}`:'';
+ const status=reportBocRate.fallback?` · 未获取到更新：${reportBocRate.error||'使用旧缓存'}`:' · 已成功读取网站最新公布的数据（工作日更新）';
+ wrap.title=name+date+status+' · 仅用于统计进度条';
+}
+async function fetchEcbRateFromSite(){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),9000);
+ try{
+  const response=await fetch('./ecb-rates.json?ts='+Date.now(),{cache:'no-store',signal:controller.signal});
+  if(!response.ok)throw new Error('汇率文件 HTTP '+response.status+'；请上传 ecb-rates.json 并启用 GitHub Actions');
+  const payload=await response.json();
+  const value=Number(payload?.rates?.CNY ?? payload?.CNY);
+  if(!(value>0&&value<30)||!/^\d{4}-\d{2}-\d{2}$/.test(String(payload?.date||''))||payload?.source!=='ECB')throw new Error('欧洲央行文件尚未生成有效数据');
+  return {value,date:payload.date,time:'',source:'欧洲央行（GitHub 自动更新）'};
+ }finally{clearTimeout(timer)}
 }
 function refreshReportBocRate(force=false){
- if(reportRateFetchPromise)return;
- if(!force&&reportRateLastCheck&&Date.now()-reportRateLastCheck<REPORT_RATE_REFRESH_MS)return;
- if(navigator.onLine===false)return;
- reportRateLastCheck=Date.now();
- reportBocRate.attempted=true;
- reportRateFetchPromise=fetchBocCashBuy().then(next=>{
-  const oldStamp=reportBocRate.date+' '+(reportBocRate.time||'00:00:00');
-  const newStamp=next.date+' '+(next.time||'00:00:00');
-  if(newStamp>=oldStamp){
-   Object.assign(reportBocRate,next,{fallback:false,source:'中国银行官方网站'});
-   try{localStorage.setItem(REPORT_BOC_CACHE_KEY,JSON.stringify(next))}catch(e){}
-  }else if(reportBocRate.source!=='预置参考值'){
-   reportBocRate.fallback=true;
+ if(reportRateFetchPromise)return reportRateFetchPromise;
+ if(!force&&reportRateLastCheck&&Date.now()-reportRateLastCheck<REPORT_RATE_REFRESH_MS)return Promise.resolve();
+ if(navigator.onLine===false){reportBocRate.fallback=true;reportBocRate.error='设备离线';updateHeroFxRate();return Promise.resolve();}
+ reportRateLastCheck=Date.now();reportBocRate.attempted=true;
+ reportRateFetchPromise=fetchEcbRateFromSite().then(next=>{
+  if(!reportBocRate.date||next.date>=reportBocRate.date){
+   Object.assign(reportBocRate,next,{fallback:false,error:''});
+   try{localStorage.setItem(REPORT_ECB_CACHE_KEY,JSON.stringify(next));}catch(e){}
+  }else{
+   reportBocRate.fallback=true;reportBocRate.error='网站汇率数据早于本机缓存';
   }
- }).catch(()=>{reportBocRate.fallback=true;}).finally(()=>{
+ }).catch(e=>{reportBocRate.fallback=true;reportBocRate.error=e?.message||'网络请求失败';}).finally(()=>{
   reportRateFetchPromise=null;
   if(tab==='reports')renderReports();updateHeroFxRate();
  });
+ return reportRateFetchPromise;
 }
-// 每次启动 App 自动检查；页面保持打开时，每过 24 小时重新检查。
-// iOS 把网页挂起时计时器会暂停，恢复到前台后补做检查。
 function checkReportRateSchedule(){refreshReportBocRate();}
-window.addEventListener('online',checkReportRateSchedule);
+window.addEventListener('online',()=>refreshReportBocRate(true));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkReportRateSchedule();});
 window.addEventListener('pageshow',checkReportRateSchedule);
 setInterval(checkReportRateSchedule,60*1000);
@@ -2305,7 +2271,7 @@ function renderReports(){renderReportTrend();
   const sums={};for(const t of transactions.filter(t=>t.type===type&&currencyOf(t)===cur))sums[t.category]=(sums[t.category]||0)+Number(t.amount||0);
   return Object.entries(sums).sort((a,b)=>b[1]-a[1]);
  };
- // 两种原币金额并排显示；仅进度条使用中国银行欧元现钞买入价折算欧元。
+ // 两种原币金额并排显示；仅进度条使用欧洲央行 EUR/CNY 参考汇率折算欧元。
  const rate=reportBocRate.value;
  for(const [type,target] of [['expense','expenseRank'],['income','incomeRank']]){
   const grouped=new Map();
