@@ -1585,7 +1585,7 @@ function renderMemoItems(){
  }
  renumberMemoRows(box);
  initMemoSwipeGestures(box);
- initMemoLongPressSort(box);
+ // 提醒事项仅使用左滑置顶排序，取消长按拖动。
  for(const item of kept){if(item.completedAt&&!memoFinishTimers.has(item.id)){
   const ms=Math.max(0,1500-(Date.now()-Number(item.completedAt)));
   memoFinishTimers.set(item.id,setTimeout(()=>finalizeMemoItem(item.id),ms));
@@ -1609,7 +1609,7 @@ document.addEventListener('pointerdown',function(e){
  const target=e.target instanceof Element?e.target:null;
  const row=target?.closest('#homeMemoList .memo-swipe-row[data-memo-id]');
  if(!row||row.contains(active)||target.closest('.memo-check,.memo-swipe-pin,.memo-swipe-delete'))return;
- if(Date.now()<memoDragSuppressClickUntil||row.dataset.justSwiped==='1')return;
+ if(row.dataset.justSwiped==='1')return;
  // 按下另一个事项即可先提交旧文字，再进入新事项的编辑状态。
  e.preventDefault();
  memoSwitchingEdit=true;
@@ -1626,7 +1626,7 @@ document.addEventListener('click',function(event){
  if(!content)return;
  if(target.closest('.memo-check,.memo-inline-edit,.memo-content-editing,.memo-swipe-pin,.memo-swipe-delete'))return;
  const wrapper=content.closest('.memo-swipe-row');
- if(!wrapper||wrapper.dataset.justSwiped==='1'||Date.now()<memoDragSuppressClickUntil)return;
+ if(!wrapper||wrapper.dataset.justSwiped==='1')return;
  event.preventDefault();
  editMemoItem(wrapper.dataset.memoId);
 });
@@ -1787,7 +1787,7 @@ function startInlineMemo(){
  const total=box.querySelectorAll('.memo-swipe-row:not(.memo-action-deleting):not(.memo-removing)').length+1;
  count.textContent=total+'.';input.setAttribute('aria-label','输入第 '+total+' 条提醒事项');
  row.append(check,count,input,flag); wrapper.append(pin,del,row);box.append(wrapper);
- initMemoLongPressSort(box);
+ // 提醒事项仅使用左滑置顶排序，取消长按拖动。
  save();
  pin.addEventListener('click',()=>{
   newMemo.pinned=!newMemo.pinned;
@@ -1843,178 +1843,7 @@ function startInlineMemo(){
  });
 }
 
-// 长按拖动调整提醒事项顺序，保存明确序号（兼容旧数据和空白事项）。
-let memoDragSuppressClickUntil=0;
-function initMemoLongPressSort(box){
- if(!box||box.dataset.longPressSortReady==='1')return;
- box.dataset.longPressSortReady='1';
- let pending=null,drag=null,holdTimer=null,dragFrame=0;
- const getRows=()=>[...box.querySelectorAll(':scope > .memo-swipe-row:not(.memo-removing):not(.memo-action-deleting)')];
- // 允许从事项文字、正在编辑的文字以及空白草稿输入区长按拖动。
- // 此前把 input/contenteditable 整体排除，正好屏蔽了用户实际按住的位置。
- const forbidden=el=>!!el.closest('.memo-check,.memo-swipe-pin,.memo-swipe-delete');
- function cancelPending(){if(holdTimer!==null)clearTimeout(holdTimer);holdTimer=null;pending=null;}
- // Horizontal swipe must never compete with the 380ms press-to-sort timer.
- box.addEventListener('memo-horizontal-swipe-start',cancelPending);
- function beginDrag(){
-  if(!pending||!pending.row.isConnected)return;
-  if(pending.row.classList.contains('memo-swipe-tracking')){cancelPending();return;}
-  const row=pending.row,rect=row.getBoundingClientRect();
-  const ghost=row.cloneNode(true);
-  ghost.removeAttribute('id');ghost.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
-  ghost.classList.remove('memo-swiped');ghost.classList.add('memo-drag-ghost');
-  ghost.style.cssText=`position:fixed!important;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;z-index:99999;pointer-events:none;transform:translate3d(0,0,0) scale(1.025);`;
-  document.body.appendChild(ghost);
-  const allRows=getRows();
-  const originIndex=allRows.indexOf(row);
-  const rowRects=allRows.map(el=>el.getBoundingClientRect());
-  const centers=rowRects.map(r=>r.top+r.height/2);
-  // 限制悬浮事项的拖动范围：标题下沿 ～ 加号中心横线。
-  const memoCard=box.closest('.home-module');
-  const heading=memoCard?.querySelector('.cardhead .cardtitle');
-  const plus=memoCard?.querySelector('#memoAddButton');
-  const upper=heading?.getBoundingClientRect().bottom ?? rect.top;
-  const plusRect=plus?.getBoundingClientRect();
-  const lower=plusRect ? plusRect.top+plusRect.height/2 : rect.bottom;
-  // 通过整行高度约束浮动条，避免压住标题或跨过加号。
-  const minGhostTop=Math.min(upper,rect.top);
-  const maxGhostTop=Math.max(minGhostTop,lower-rect.height);
-  const gap=allRows.length>1?Math.max(0,Math.min(16,(rowRects[1].top-rowRects[0].bottom))):3;
-  drag={row,ghost,pointerId:pending.pointerId,startY:pending.y,y:pending.y,rect,startOrder:allRows.map(r=>r.dataset.memoId),moving:false,lastTarget:null,
-   allRows,originIndex,targetIndex:originIndex,centers,shiftDistance:rect.height+gap,minGhostTop,maxGhostTop,
-   pushOffsets:new Array(allRows.length).fill(0),lastFrameTime:0};
-  cancelPending();row.classList.remove('memo-swiped');
-  row.classList.add('memo-drag-placeholder');box.classList.add('memo-dragging');
-  for(const el of drag.allRows){
-   if(el===row)continue;
-   el.getAnimations().filter(a=>a.id==='memo-drag-push').forEach(a=>a.cancel());
-   el.style.transition='none'; // 位移统一交给逐帧缓动，避免刚开始让位时触发 CSS transition
-   el.style.willChange='transform';
-  }
-  memoDragSuppressClickUntil=Date.now()+1600;
-  window.getSelection()?.removeAllRanges();
-  if(navigator.vibrate)navigator.vibrate(12);
- }
- // 悬浮副本跟着手指/鼠标走；原行只占位。经过其他行中点时，让该行平滑向上/向下让位。
- // 不再把被拖动行本身反复 FLIP 到一个新位置，避免“突然交换/瞬移”。
- // 手指/鼠标事件可能每秒触发数百次：只记录坐标，整帧最多计算一次布局。
- // 悬浮行使用 GPU transform；只有真正跨越另一行中点时才触发挤开动画。
- // 快速移动时只修改 GPU transform；整个拖动过程中不搬动 DOM、不测量其他行位置、也不重启 WAAPI 动画。
- // 逐帧插值：被挤行每帧从当前位移逼近目标，不重复启动 CSS 过渡。
- // 快速越过多行时也不会回到静止位置再启动，减少让位瞬间的卡顿。
- function renderMemoDragFrame(timestamp){
-  dragFrame=0;
-  if(!drag)return;
-  const d=drag;
-  const dt=d.lastFrameTime?Math.min(40,Math.max(1,timestamp-d.lastFrameTime)):16;
-  d.lastFrameTime=timestamp;
-  d.ghost.style.transform=`translate3d(0,${d.y-d.startY}px,0) scale(1.025)`;
-  let next=0;
-  for(let i=0;i<d.centers.length;i++){
-   if(i===d.originIndex)continue;
-   if(d.y>d.centers[i])next++;
-  }
-  next=Math.max(0,Math.min(d.allRows.length-1,next));
-  d.targetIndex=next;
-  // 约 105ms 的时间常数：不依赖鼠标事件频率，反复改变目标也能连续过渡。
-  const easing=1-Math.exp(-dt/105);
-  let unsettled=false;
-  for(let i=0;i<d.allRows.length;i++){
-   if(i===d.originIndex)continue;
-   const el=d.allRows[i];
-   const target=next>d.originIndex&&i>d.originIndex&&i<=next?-d.shiftDistance:
-                next<d.originIndex&&i>=next&&i<d.originIndex?d.shiftDistance:0;
-   let v=d.pushOffsets[i]+(target-d.pushOffsets[i])*easing;
-   if(Math.abs(target-v)<.15)v=target;
-   if(Math.abs(target-v)>=.15)unsettled=true;
-   if(v!==d.pushOffsets[i]){
-    d.pushOffsets[i]=v;
-    el.style.transform=`translate3d(0,${v.toFixed(2)}px,0)`;
-   }
-  }
-  if(unsettled)dragFrame=requestAnimationFrame(renderMemoDragFrame);
- }
- function moveDrag(y){
-  if(!drag)return;
-  // 只限制提醒事项浮动行，不影响列表的挤开动画和其他模块拖动。
-  const clampedTop=Math.max(drag.minGhostTop,Math.min(drag.maxGhostTop,drag.rect.top+(y-drag.startY)));
-  drag.y=drag.startY+(clampedTop-drag.rect.top);drag.moving=true;
-  if(!dragFrame)dragFrame=requestAnimationFrame(renderMemoDragFrame);
- }
- function endDrag(cancel=false){
-  if(!drag){cancelPending();return;}
-  const current=drag;const {row,ghost,startOrder}=current;
-  if(dragFrame){cancelAnimationFrame(dragFrame);dragFrame=0;}
-  // 鼠标松开的最终坐标同样用于落位，避免最后一帧没有更新造成抖动。
-  ghost.style.transform=`translate3d(0,${current.y-current.startY}px,0) scale(1.025)`;
-  drag=null;memoDragSuppressClickUntil=Date.now()+900;
-  if(cancel){
-   const map=new Map(getRows().map(el=>[el.dataset.memoId,el]));
-   for(const id of startOrder){const el=map.get(id);if(el)box.appendChild(el);}
-   renumberMemoRows(box);
-  }
-  // 松手时才提交 DOM 顺序，跨越多行也只发生一次布局重排。
-  if(!cancel){
-   const others=current.allRows.filter(el=>el!==row&&el.isConnected);
-   const target=others[current.targetIndex];
-   if(target)box.insertBefore(row,target);else box.appendChild(row);
-  }
-  for(const el of current.allRows){
-   if(el===row||!el.isConnected)continue;
-   el.style.transition='none';
-   el.style.transform='';
-   el.style.willChange='';
-  }
-  // 先将悬浮副本顺滑落到占位行，再露出真正的事项。
-  const destination=row.getBoundingClientRect();
-  ghost.style.transition='transform 240ms cubic-bezier(.2,.8,.2,1)';
-  ghost.style.transform=`translate3d(0,${destination.top-current.rect.top}px,0) scale(1)`;
-  setTimeout(()=>{
-   ghost.remove();row.classList.remove('memo-drag-placeholder');box.classList.remove('memo-dragging');
-  },250);
-  if(cancel)return;
-  const order=getRows().map(el=>el.dataset.memoId);
-  const byId=new Map(memoItems().map(item=>[String(item.id),item]));
-  for(const el of getRows()){
-   const item=byId.get(String(el.dataset.memoId));if(!item)continue;
-   const editable=el.querySelector('.memo-content-editing');
-   const draft=el.querySelector('.memo-draft-input');
-   if(editable)item.text=editable.innerText.replace(/\n/g,' ').trim();
-   if(draft)item.text=draft.value.trim();
-  }
-  order.forEach((key,i)=>{const item=byId.get(String(key));if(item){item.memoOrder=i;item.pinned=false;}});
-  const remaining=memoItems().filter(item=>!order.includes(String(item.id)));
-  data.memoItems=[...order.map(key=>byId.get(String(key))).filter(Boolean),...remaining];
-  box.querySelectorAll('.memo-swipe-pin').forEach(button=>button.textContent='置顶');
-  box.querySelectorAll('.memo-pinned').forEach(el=>el.classList.remove('memo-pinned'));
-  box.querySelectorAll('.memo-pin-flag').forEach(el=>el.hidden=true);
-  renumberMemoRows(box);save();
- }
- box.addEventListener('pointerdown',e=>{
-  if(e.button!==0||drag||pending||forbidden(e.target))return;
-  const row=e.target.closest('.memo-swipe-row');if(!row||!box.contains(row))return;
-  pending={row,pointerId:e.pointerId,x:e.clientX,y:e.clientY};
-  holdTimer=setTimeout(beginDrag,380);
- },true);
- document.addEventListener('pointermove',e=>{
-  if(drag&&e.pointerId===drag.pointerId){if(e.cancelable)e.preventDefault();moveDrag(e.clientY);return;}
-  if(pending&&e.pointerId===pending.pointerId){
-   if(Math.hypot(e.clientX-pending.x,e.clientY-pending.y)>12)cancelPending();
-  }
- },{passive:false});
- document.addEventListener('pointerup',e=>{
-  if(drag&&e.pointerId===drag.pointerId)endDrag();
-  else if(pending&&e.pointerId===pending.pointerId)cancelPending();
- });
- document.addEventListener('pointercancel',e=>{
-  if(drag&&e.pointerId===drag.pointerId)endDrag(true);
-  else if(pending&&e.pointerId===pending.pointerId)cancelPending();
- });
- box.addEventListener('click',e=>{if(Date.now()<memoDragSuppressClickUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
- box.addEventListener('contextmenu',e=>{if(drag||pending)e.preventDefault();});
- box.addEventListener('dragstart',e=>{if(drag||pending)e.preventDefault();});
-}
-
+// V259：已移除提醒事项长按拖动排序；左滑置顶和删除保持不变。
 function renumberMemoRows(box){
  // 正在播放删除/打卡消失动画的行不再占用序号；动画未结束也保持编号稳定。
  let index=0;
