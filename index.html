@@ -1186,6 +1186,27 @@
 #homeMemoList .memo-draft-input,
 #homeMemoList .memo-inline-edit {font-weight:400!important;}
 </style>
+
+<style id="v265-memo-actions-no-gray-backdrop">
+/* Only the two circles remain visible; remove the gray rectangular shadow beneath them. */
+@media (hover:none), (pointer:coarse){
+ #homeMemoList .memo-swipe-row>.memo-swipe-pin,
+ #homeMemoList .memo-swipe-row>.memo-swipe-delete{
+   box-shadow:none!important;filter:none!important;
+   -webkit-filter:none!important;
+ }
+ #homeMemoList .memo-swipe-row>.memo-swipe-pin::before,
+ #homeMemoList .memo-swipe-row>.memo-swipe-pin::after,
+ #homeMemoList .memo-swipe-row>.memo-swipe-delete::before,
+ #homeMemoList .memo-swipe-row>.memo-swipe-delete::after{
+   box-shadow:none!important;filter:none!important;
+ }
+}
+</style>
+<style id="v266-orange-memo-pin">
+/* 置顶按钮换成参考图片的橙色，保持白字和原有动画。 */
+#homeMemoList .memo-swipe-row>.memo-swipe-pin{background:#f09747!important;color:#fff!important;}
+</style>
 </head>
 <body>
 <svg class="glass-optics-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
