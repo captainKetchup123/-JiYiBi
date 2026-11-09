@@ -821,15 +821,15 @@
 .credit-summary .credit-buttons .credit-setting,.credit-summary .credit-buttons .credit-repay{justify-self:auto;text-align:center;white-space:nowrap}
 @media(max-width:430px){.credit-summary .credit-item.credit-item-compact{padding-right:28px}.credit-summary .credit-bottom-row{gap:6px}.credit-summary .credit-buttons{gap:7px}.credit-summary .credit-inline-due{font-size:18px}.credit-summary .credit-buttons .credit-setting{font-size:12px}}
 </style><style id="v142-account-name-single-line">
-/* 账户名称独占第一行，编辑与拖动按钮移到币种所在的第二行，避免挤压名称。 */
-#accountGrid .account>.spread{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center}
+/* 账户名称独占第一行；三道杠在右上角，编辑按钮在其下方右对齐。 */
+#accountGrid .account>.spread{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center}
 #accountGrid .account-identity{display:contents}
-#accountGrid .account-identity-name{grid-column:1/-1;grid-row:1;display:flex;align-items:center;gap:6px;min-width:0;font-size:17px;line-height:1.4;font-weight:750;color:var(--text)}
+#accountGrid .account-identity-name{grid-column:1;grid-row:1;display:flex;align-items:center;gap:6px;min-width:0;font-size:17px;line-height:1.4;font-weight:750;color:var(--text)}
 #accountGrid .account-identity-name>span:last-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:normal}
 #accountGrid .account-identity-icon{flex:none}
-#accountGrid .account-identity-currency{grid-column:1;grid-row:2;min-width:0;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
-#accountGrid .account>.spread>.link{grid-column:2;grid-row:2;white-space:nowrap;align-self:center;font-size:13px}
-#accountGrid .account>.spread>.accountdrag{grid-column:3;grid-row:2;align-self:center;flex:none}
+#accountGrid .account-identity-currency{grid-column:1;grid-row:2;min-width:0;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;align-self:center}
+#accountGrid .account>.spread>.link{grid-column:2;grid-row:2;white-space:nowrap;align-self:center;justify-self:end;font-size:13px;padding:0;line-height:1;transform:translateX(-6px)}
+#accountGrid .account>.spread>.accountdrag{grid-column:2;grid-row:1;justify-self:end;align-self:center;flex:none}
 @media(max-width:800px){#accountGrid .account>.spread{column-gap:8px}#accountGrid .account-identity-name{font-size:16px}}
 </style>
 
@@ -1643,8 +1643,7 @@ document.addEventListener('pointerdown',function(e){
  const content=label.innerText.replace(/\n/g,' ').trim();
  if(content)item.text=content;
  label.contentEditable='false';label.classList.remove('memo-content-editing');
- item.completedAt=Date.now();
- save();renderMemoItems();
+ completeMemoItem(item.id);
  // 防止已移除的旧节点再次处理点击事件。
 },{capture:true});
 function editMemoItem(memoId){
@@ -1813,12 +1812,11 @@ function startInlineMemo(){
   if(cancel){settled=true;removeDraft();return;}
   newMemo.text=value; // 即使空白也永久保留这一条记录和它的编号。
   if(completed){
-   settled=true;newMemo.completedAt=Date.now();
+   settled=true;
    wrapper.classList.remove('memo-draft-wrapper');row.classList.add('memo-done');
    check.textContent='✓';check.disabled=true;
    const label=document.createElement('span');label.className='memo-text';label.textContent=value;input.replaceWith(label);
-   save();
-   memoFinishTimers.set(newMemo.id,setTimeout(()=>finalizeMemoItem(newMemo.id),1500));
+   completeMemoItem(newMemo.id);
    return;
   }
   save(); // 原地保存，不会把后填的事项移动到末尾。
@@ -1853,12 +1851,38 @@ function renumberMemoRows(box){
  });
 }
 function completeMemoItem(memoId){
- const item=memoItems().find(x=>x.id===memoId);if(!item||item.completedAt)return;
- item.completedAt=Date.now();save();renderMemoItems();
+ const key=String(memoId),item=memoItems().find(x=>String(x.id)===key);
+ if(!item||item.completedAt)return;
+ item.completedAt=Date.now();
+ const box=document.getElementById('homeMemoList');
+ const row=box&&[...box.querySelectorAll('.memo-swipe-row[data-memo-id]')].find(el=>el.dataset.memoId===key);
+ if(row){
+  row.querySelector('.memo-row')?.classList.add('memo-done');
+  const check=row.querySelector('.memo-check');if(check){check.textContent='✓';check.disabled=true;}
+  // 无论事项是新建草稿、刚结束编辑还是已保存，都安排同一个消失流程。
+  row.classList.remove('memo-draft-wrapper');
+ }
+ save();
+ const previous=memoFinishTimers.get(key);if(previous)clearTimeout(previous);
+ memoFinishTimers.set(key,setTimeout(()=>finalizeMemoItem(key),1500));
+ // 浏览器切换标签、动画被中断或重新渲染时，保证已打卡事项不会永久停留。
+ setTimeout(()=>{
+  const pending=memoItems().find(x=>String(x.id)===key&&x.completedAt);
+  if(pending&&Date.now()-Number(pending.completedAt)>=2600){
+   const timer=memoFinishTimers.get(key);if(timer)clearTimeout(timer);
+   memoFinishTimers.delete(key);
+   const currentBox=document.getElementById('homeMemoList');
+   const target=currentBox&&[...currentBox.querySelectorAll('.memo-swipe-row[data-memo-id]')].find(el=>el.dataset.memoId===key);
+   target?.remove();data.memoItems=memoItems().filter(x=>String(x.id)!==key);
+   if(currentBox){renumberMemoRows(currentBox);if(!currentBox.querySelector('.memo-swipe-row'))renderMemoItems();}
+   save();
+  }
+ },2800);
 }
 function finalizeMemoItem(memoId){
+ memoId=String(memoId);
  memoFinishTimers.delete(memoId);
- const item=memoItems().find(x=>x.id===memoId);
+ const item=memoItems().find(x=>String(x.id)===memoId);
  if(!item||!item.completedAt)return;
  const elapsed=Date.now()-Number(item.completedAt);
  if(elapsed<1500){memoFinishTimers.set(memoId,setTimeout(()=>finalizeMemoItem(memoId),1500-elapsed));return;}
@@ -1878,8 +1902,8 @@ function finalizeMemoItem(memoId){
  // 等到高度/透明度动画均结束后再更新数据和编号。
  memoFinishTimers.set(memoId,setTimeout(()=>{
   memoFinishTimers.delete(memoId);
-  if(!memoItems().some(x=>x.id===memoId))return;
-  data.memoItems=memoItems().filter(x=>x.id!==memoId);
+  if(!memoItems().some(x=>String(x.id)===memoId))return;
+  data.memoItems=memoItems().filter(x=>String(x.id)!==memoId);
   // 编辑中的空白行会阻止整表重绘；移除完成行后必须单独刷新编号。
   row?.remove();
   if(box){
@@ -3680,17 +3704,17 @@ window.addEventListener('visibilitychange',()=>{if(!document.hidden&&user&&!pend
 </script>
 
 <style id="v196-account-ghost-preserve-layout">
-/* 账户浮动副本移出 #accountGrid 后仍使用相同两行网格；避免名称、编辑按钮被挤到换行。 */
+/* 账户浮动副本移出 #accountGrid 后仍保持相同布局。 */
 
 /* 账户名称独占第一行，编辑与拖动按钮移到币种所在的第二行，避免挤压名称。 */
-.v191-drag-ghost.account>.spread{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center}
+.v191-drag-ghost.account>.spread{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;row-gap:5px;align-items:center}
 .v191-drag-ghost.account .account-identity{display:contents}
-.v191-drag-ghost.account .account-identity-name{grid-column:1/-1;grid-row:1;display:flex;align-items:center;gap:6px;min-width:0;font-size:17px;line-height:1.4;font-weight:750;color:var(--text)}
+.v191-drag-ghost.account .account-identity-name{grid-column:1;grid-row:1;display:flex;align-items:center;gap:6px;min-width:0;font-size:17px;line-height:1.4;font-weight:750;color:var(--text)}
 .v191-drag-ghost.account .account-identity-name>span:last-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:normal}
 .v191-drag-ghost.account .account-identity-icon{flex:none}
-.v191-drag-ghost.account .account-identity-currency{grid-column:1;grid-row:2;min-width:0;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
-.v191-drag-ghost.account>.spread>.link{grid-column:2;grid-row:2;white-space:nowrap;align-self:center;font-size:13px}
-.v191-drag-ghost.account>.spread>.accountdrag{grid-column:3;grid-row:2;align-self:center;flex:none}
+.v191-drag-ghost.account .account-identity-currency{grid-column:1;grid-row:2;min-width:0;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;align-self:center}
+.v191-drag-ghost.account>.spread>.link{grid-column:2;grid-row:2;white-space:nowrap;align-self:center;justify-self:end;font-size:13px;padding:0;line-height:1;transform:translateX(-6px)}
+.v191-drag-ghost.account>.spread>.accountdrag{grid-column:2;grid-row:1;justify-self:end;align-self:center;flex:none}
 @media(max-width:800px){.v191-drag-ghost.account>.spread{column-gap:8px}.v191-drag-ghost.account .account-identity-name{font-size:16px}}
 
 .v191-drag-ghost.account .account-identity-name>span:last-child{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
