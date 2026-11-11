@@ -1207,6 +1207,27 @@
 /* 置顶按钮换成参考图片的橙色，保持白字和原有动画。 */
 #homeMemoList .memo-swipe-row>.memo-swipe-pin{background:#f09747!important;color:#fff!important;}
 </style>
+
+<style id="v269-recurring-expenses-styles">
+.rec-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 18px}
+.rec-summary>div{padding:15px;border-radius:15px;background:var(--bluewash);min-width:0}
+.rec-summary small{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}
+.rec-summary strong{display:block;font-size:19px;color:var(--text);font-variant-numeric:tabular-nums}
+.rec-item{border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin:10px 0;background:var(--card)}
+.rec-item-main{display:flex;align-items:center;gap:10px;min-width:0}
+.rec-icon{width:40px;height:40px;flex:none;background:var(--bluewash);border-radius:12px;display:grid;place-items:center;font-size:21px}
+.rec-item-info{flex:1;min-width:0}.rec-item-info b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rec-item-info small{display:block;color:var(--muted);font-size:12px;line-height:1.6}
+.rec-item-amount{font-weight:800;white-space:nowrap;font-size:16px}
+.rec-item-bottom{display:flex;justify-content:space-between;align-items:center;gap:7px;flex-wrap:wrap;margin-top:12px}
+.rec-status{font-size:12px;color:var(--muted)}.rec-status.done{color:var(--green)}.rec-status.due{color:var(--red)}
+.rec-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.rec-actions .btn{font-size:12px;padding:8px 10px}
+.rec-panel-actions{display:flex;gap:8px;margin-top:14px}.rec-panel-actions .btn{flex:1}
+.rec-currency-toggle{display:flex;gap:7px}.rec-currency-toggle button{flex:1;padding:11px 8px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--muted);font-weight:800}
+.rec-currency-toggle button.active{border-color:var(--blue);background:var(--bluewash);color:var(--blue)}
+.rec-form-error{font-size:13px;color:var(--red);line-height:1.5;min-height:0}
+.rec-muted{font-size:12px;color:var(--muted);line-height:1.6}
+@media(max-width:450px){.rec-summary strong{font-size:17px}.rec-item{padding:12px}.rec-actions .btn{padding:7px 8px}}
+</style>
 </head>
 <body>
 <svg class="glass-optics-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
@@ -1221,7 +1242,7 @@
 
 <div class="app"><aside class="sidebar"><button type="button" class="logo brand-home-link" aria-label="返回财务概览首页" title="返回首页" onclick="switchTab('dashboard')"><svg class="brand-symbol" viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="62" height="62" rx="16" fill="#fff" stroke="#e6ebf5" stroke-width="1.2"/><path d="M16 19.5c0-4.5 3.1-7.9 7.7-8.5L45 8.5c2.1-.3 3.8 1.1 4.2 3.2l1.2 7.8" fill="none" stroke="var(--blue)" stroke-width="4.2" stroke-linecap="round" opacity=".55"/><path d="M14 22c0-3.9 3.1-7 7-7h28c3.9 0 7 3.1 7 7v27c0 3.9-3.1 7-7 7H21c-3.9 0-7-3.1-7-7Z" fill="var(--blue)"/><path d="M17 22c0-2.6 2-4.5 4.5-4.5H48" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/><path d="M29 28l5 6 5-6M34 34v12M28 37h12M28 41h12" fill="none" stroke="#fff" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M46.5 31H58v16H46.5c-3.7 0-6.5-2.8-6.5-6.5V37.5c0-3.7 2.8-6.5 6.5-6.5Z" fill="var(--bluewash)" stroke="var(--blue)" stroke-width="1.8"/><circle cx="48" cy="39" r="3" fill="var(--blue)"/></svg><span class="brand-wordmark">记一笔</span></button><nav id="sideNav"></nav><div class="sidebar-hint">每一笔，都有迹可循。<br><span id="sidebarCloudHint">数据仅保存在当前浏览器。</span><br><span class="app-build-label">V89 · 同步时间</span></div></aside><main class="main"><header class="topbar"><div><div class="eyebrow" id="greeting"></div><h1 class="title" id="pageTitle">财务概览</h1></div><div class="cloud-header" hidden aria-hidden="true"><span class="cloud-status" id="cloudStatus">☁ 未登录 · 仅本机</span><button class="btn small" id="cloudLoginBtn" type="button" onclick="window.ledgerCloudLogin?.()">使用 Google 登录</button><button class="btn small" id="cloudLogoutBtn" type="button" hidden onclick="window.ledgerCloudLogout?.()">退出登录</button></div></header>
 <section class="section show" id="dashboard"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="home-board" id="homeBoard"><div class="hero home-module home-wide" data-home-module="overview"><button aria-label="按住拖动收支总览模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="hero-dual"><div class="hero-panel"><div class="hero-currency">🇪🇺 欧元 EUR</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceEUR">€0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeEUR"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseEUR"></strong></div></div></div><div class="hero-fx-rate" id="heroFxRate" aria-label="100欧元对应的人民币金额"><span class="hero-fx-row"><span>100</span></span><span class="hero-fx-divider"></span><span class="hero-fx-row"><span id="heroFxCny">—</span></span></div><div class="hero-panel right"><div class="hero-currency">🇨🇳 人民币 CNY</div><div class="label">本月结余 · 收入 − 支出</div><div class="hero-number" id="heroBalanceCNY">¥0.00</div><div class="hero-sub"><div><div class="label">↗ 本月收入</div><strong class="green" id="heroIncomeCNY"></strong></div><div><div class="label">↘ 本月支出</div><strong class="red" id="heroExpenseCNY"></strong></div></div></div></div></div><div class="card credit-summary home-module home-wide" data-home-module="credit" id="creditSummary" style="display:none"><button aria-label="按住拖动信用卡待还模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button></div><div class="card home-module" data-home-module="balances"><button aria-label="按住拖动账户余额模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">余额</span><button class="link" onclick="switchTab('accounts')">管理账户</button></div><div id="homeBalances"></div></div><div class="card home-module" data-home-module="categories"><button aria-label="按住拖动支出分类模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">支出分类</span><div class="cat-month-control" aria-label="支出分类月份选择"><button type="button" onclick="changeCategoryMonth(-1)" aria-label="查看上个月支出分类">‹</button><span id="categoryMonthLabel" aria-live="polite"></span><button type="button" onclick="changeCategoryMonth(1)" aria-label="查看下个月支出分类">›</button></div></div><div class="stats stats-multi-currency"><div class="currency-donut-grid"><div class="currency-donut-card"><div class="currency-donut-head">欧元 EUR</div><div class="currency-donut-body"><div class="donut" id="donutEUR"><div class="donut-text"><div class="subtle">总支出</div><b id="donutAmountEUR"></b></div></div><div class="legend" id="legendEUR"></div></div></div><div class="currency-donut-card"><div class="currency-donut-head">人民币 CNY</div><div class="currency-donut-body"><div class="donut" id="donutCNY"><div class="donut-text"><div class="subtle">总支出</div><b id="donutAmountCNY"></b></div></div><div class="legend" id="legendCNY"></div></div></div></div></div></div><div class="card home-module" data-home-module="memo"><button type="button" class="home-drag-handle" title="按住拖动调整模块位置" aria-label="按住拖动提醒事项模块">☰</button><div class="cardhead"><span class="cardtitle">提醒事项</span></div><div id="homeMemoList" class="memo-list"></div><div class="memo-add memo-add-only"><button type="button" id="memoAddButton" class="btn memo-add-button" aria-label="添加提醒事项" onclick="startInlineMemo()"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v16M4 12h16" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button></div></div><div class="card home-module" data-home-module="recent"><button aria-label="按住拖动最近交易模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">最近交易</span><button class="link" onclick="switchTab('transactions')">查看全部</button></div><div class="list" id="recentList"></div></div><div class="card home-module" data-home-module="budget"><button aria-label="按住拖动本月预算模块" class="home-drag-handle" title="按住拖动调整模块位置" type="button">☰</button><div class="cardhead"><span class="cardtitle">本月预算</span><button class="link" onclick="switchTab('budgets')">管理预算</button></div><div id="budgetPreview"></div></div></div></section>
-<section id="transactions" class="section"><div class="toolbar"><div class="tx-search-wrap"><input class="field" id="searchTx" placeholder="🔎 搜索备注、分类或商户…" autocomplete="off" oninput="renderTransactions();txUpdateClearButton()" onfocus="updateTransactionSuggestions()" onkeydown="txSearchKeyDown(event)" onblur="txSearchBlur()"><button type="button" id="txSearchClearBtn" class="tx-search-clear-btn" aria-label="清空搜索内容" onclick="txClearSearchInput()" hidden>✕</button><div id="txSearchSuggestions" class="tx-suggestion-list" hidden></div></div><select class="select" id="txTypeFilter" onchange="renderTransactions()"><option value="all">全部类型</option><option value="expense">支出</option><option value="income">收入</option><option value="repayment">信用卡还款</option><option value="transfer">划账</option></select><select class="select" id="txAccountFilter" onchange="renderTransactions()"></select><select class="select" id="txDateMode" aria-label="日期范围" onchange="updateTxDateControls()"><option value="month">当前月份</option><option value="all">全部日期</option><option value="day">指定日期</option><option value="range">日期区间</option></select><div class="tx-date-controls" id="txDateControls" hidden><label id="txStartLabel" for="txDateStart">日期</label><input class="field" type="date" id="txDateStart" aria-label="开始日期" onchange="renderTransactions()"><label id="txEndLabel" for="txDateEnd" hidden>至</label><input class="field" type="date" id="txDateEnd" aria-label="结束日期" onchange="renderTransactions()" hidden></div></div><div class="tx-summary" id="txSummary" aria-live="polite"></div><div class="card"><div class="cardhead"><span class="cardtitle">交易明细</span><span class="subtle" id="txCount"></span></div><div id="txList"></div></div></section>
+<section id="transactions" class="section"><div class="toolbar"><button type="button" class="btn primary" onclick="openRecurringExpenses()">↻ 每月固定支出</button><div class="tx-search-wrap"><input class="field" id="searchTx" placeholder="🔎 搜索备注、分类或商户…" autocomplete="off" oninput="renderTransactions();txUpdateClearButton()" onfocus="updateTransactionSuggestions()" onkeydown="txSearchKeyDown(event)" onblur="txSearchBlur()"><button type="button" id="txSearchClearBtn" class="tx-search-clear-btn" aria-label="清空搜索内容" onclick="txClearSearchInput()" hidden>✕</button><div id="txSearchSuggestions" class="tx-suggestion-list" hidden></div></div><select class="select" id="txTypeFilter" onchange="renderTransactions()"><option value="all">全部类型</option><option value="expense">支出</option><option value="income">收入</option><option value="repayment">信用卡还款</option><option value="transfer">划账</option></select><select class="select" id="txAccountFilter" onchange="renderTransactions()"></select><select class="select" id="txDateMode" aria-label="日期范围" onchange="updateTxDateControls()"><option value="month">当前月份</option><option value="all">全部日期</option><option value="day">指定日期</option><option value="range">日期区间</option></select><div class="tx-date-controls" id="txDateControls" hidden><label id="txStartLabel" for="txDateStart">日期</label><input class="field" type="date" id="txDateStart" aria-label="开始日期" onchange="renderTransactions()"><label id="txEndLabel" for="txDateEnd" hidden>至</label><input class="field" type="date" id="txDateEnd" aria-label="结束日期" onchange="renderTransactions()" hidden></div></div><div class="tx-summary" id="txSummary" aria-live="polite"></div><div class="card"><div class="cardhead"><span class="cardtitle">交易明细</span><span class="subtle" id="txCount"></span></div><div id="txList"></div></div></section>
 <section id="calendar" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button></div><div class="card"><div class="holiday-legend"><span class="cn">● 中国节日</span><span class="it">● 意大利节日</span></div><div class="calendar" id="calGrid"></div></div><div class="card" style="margin-top:17px"><div class="cardhead"><span class="cardtitle" id="calDayTitle">当日明细</span><button class="link" onclick="openTransaction(selectedDay)">＋ 添加</button></div><div id="calHolidayInfo"></div><div id="calDayList"></div></div></section>
 <section id="budgets" class="section"><div class="toolbar"><div class="monthgroup"><button onclick="moveMonth(-1)">‹</button><b class="view-month"></b><button onclick="moveMonth(1)">›</button></div><button class="btn small" onclick="goCurrentMonth()">本月</button><button class="btn primary" onclick="openBudget()">＋ 设置预算</button></div><div class="card"><div class="cardhead"><span class="cardtitle">每月预算</span><span class="subtle">预算设置适用于所有月份</span></div><div id="budgetList"></div></div></section>
 <section id="accounts" class="section"><div class="toolbar"><button class="btn primary" onclick="openAccount()">＋ 添加账户</button></div><p class="smallnote" style="margin:0 0 12px">按住右侧 ☰ 拖动付款/收款方式，松手自动保存顺序。</p><div class="accountgrid" id="accountGrid"></div><p class="smallnote">每个付款/收款方式以自身币种保留余额。</p><p class="smallnote" style="margin-top:17px">提示：按住卡片右上角 ☰ 拖动可调整付款/收款方式的显示顺序。删除已有交易的方式前，须先调整相关交易。</p></section>
@@ -1516,7 +1537,7 @@ function moveMonth(delta){viewMonth+=delta;let d=new Date(viewYear,viewMonth,1);
 function convert(amount,from,to){const r=data.rates||{};return amount/(Number(r[from])||1)*(Number(r[to])||1)}
 function nativeMoney(t){return money(t.amount,false,t.currency||acct(t.account)?.currency||'EUR')}
 function ratesText(){return '汇率：1 EUR = '+(Number(data.rates.CNY)||8)+' CNY（手动设置）'}
-function render(){document.querySelectorAll('.view-month').forEach(x=>x.textContent=`${viewYear}年${viewMonth+1}月`);document.getElementById('greeting').textContent=['周日','周一','周二','周三','周四','周五','周六'][new Date().getDay()]+' · '+today();if(tab==='dashboard')renderDashboard();if(tab==='transactions')renderTransactions();if(tab==='calendar')renderCalendar();if(tab==='budgets')renderBudgets();if(tab==='accounts')renderAccounts();if(tab==='reports')renderReports()}
+function render(){if(typeof processRecurringDue==='function')processRecurringDue();document.querySelectorAll('.view-month').forEach(x=>x.textContent=`${viewYear}年${viewMonth+1}月`);document.getElementById('greeting').textContent=['周日','周一','周二','周三','周四','周五','周六'][new Date().getDay()]+' · '+today();if(tab==='dashboard')renderDashboard();if(tab==='transactions')renderTransactions();if(tab==='calendar')renderCalendar();if(tab==='budgets')renderBudgets();if(tab==='accounts')renderAccounts();if(tab==='reports')renderReports();if(typeof scheduleRecurringBalanceReminderCheck==='function')scheduleRecurringBalanceReminderCheck()}
 function summarizeCats(type){let m={};for(let t of monthly(type))m[t.category]=(m[t.category]||0)+convert(Number(t.amount),t.currency||'EUR',data.currency);return Object.entries(m).sort((a,b)=>b[1]-a[1])}
 function changeCategoryMonth(delta){const d=new Date(categoryViewYear,categoryViewMonth+delta,1);categoryViewYear=d.getFullYear();categoryViewMonth=d.getMonth();renderCategoryChart()}
 function fitDonutTotals(){
@@ -2296,16 +2317,16 @@ function renderReports(){renderReportTrend();
  }
  document.getElementById('dailyReport').innerHTML=Object.entries(byDate).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,sums])=>`<div class="budgetrow report-daily-row"><b>${date}</b><div class="report-daily-currencies">${currencies.filter(cur=>sums[cur].income||sums[cur].expense).map(cur=>`<div class="report-daily-currency"><span class="report-daily-label">${cur==='EUR'?'欧元':'人民币'}</span>${sums[cur].income?`<span class="green">+${money(sums[cur].income,false,cur)}</span>`:''}${sums[cur].expense?`<span class="red">-${money(sums[cur].expense,false,cur)}</span>`:''}</div>`).join('')}</div></div>`).join('')||'<div class="empty">本月暂无收支记录</div>';
 }
-function modal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modalWrap').classList.add('open')}function closeModal(){document.getElementById('modalWrap').classList.remove('open')};function showDialog(html){document.getElementById('dialogContent').innerHTML=html;document.getElementById('dialogWrap').classList.add('open')}function closeDialog(){document.getElementById('dialogWrap').classList.remove('open');document.getElementById('dialogContent').innerHTML=''}document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDialog();closeModal()}});function toast(msg,title='操作成功',icon='✓'){let e=document.getElementById('toast');e.innerHTML=`<div class="toast-icon">${icon}</div><div class="toast-text"><b>${title}</b><span>${msg}</span></div>`;e.style.display='flex';requestAnimationFrame(()=>e.classList.add('show'));clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>{e.classList.remove('show');setTimeout(()=>{e.style.display='none';e.innerHTML=''},180)},1800)}
+function modal(html){document.getElementById('modalContent').innerHTML=html;document.getElementById('modalWrap').classList.add('open')}function closeModal(){document.getElementById('modalWrap').classList.remove('open');if(typeof scheduleRecurringBalanceReminderCheck==='function')scheduleRecurringBalanceReminderCheck()};function showDialog(html){document.getElementById('dialogContent').innerHTML=html;document.getElementById('dialogWrap').classList.add('open')}function closeDialog(){document.getElementById('dialogWrap').classList.remove('open');document.getElementById('dialogContent').innerHTML='';if(typeof recurringBalanceWarningOpen!=='undefined'&&recurringBalanceWarningOpen)recurringBalanceWarningOpen=false;}document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDialog();closeModal()}});function toast(msg,title='操作成功',icon='✓'){let e=document.getElementById('toast');e.innerHTML=`<div class="toast-icon">${icon}</div><div class="toast-text"><b>${title}</b><span>${msg}</span></div>`;e.style.display='flex';requestAnimationFrame(()=>e.classList.add('show'));clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>{e.classList.remove('show');setTimeout(()=>{e.style.display='none';e.innerHTML=''},180)},1800)}
 function syncEntryDate(){const field=document.getElementById('fDate'),label=document.getElementById('fDateText');if(field&&label)label.textContent=field.value||'请选择日期'}
-let editingId=null,entryType='expense',chosenCat='超市买菜',chosenSub='',selectedTxCurrency='EUR';function openTransaction(day=null,type=null,edit=null){editingId=edit;let t=edit?data.transactions.find(t=>t.id===edit):null;if(edit&&!t)return;entryType=t?.type||type||'expense';chosenCat=t?.category||(entryType==='income'?'工资':(catSet('expense')[0]?.name||'超市买菜'));chosenSub=t?.subcategory||'';selectedTxCurrency=t?.currency||acct(t?.account)?.currency||data.currency||'EUR';let options=data.accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)} (${a.currency||'EUR'})</option>`).join('');modal(`<div class="modalhead"><h2>${edit?'编辑交易':'记一笔'}</h2><button class="close" onclick="closeModal()">✕</button></div><div class="seg" id="typeSeg"><button onclick="setEntryType('expense')" data-type="expense">支出</button><button onclick="setEntryType('income')" data-type="income">收入</button><button onclick="setEntryType('transfer')" data-type="transfer">划账</button></div><form id="txForm" novalidate onsubmit="event.preventDefault();submitTransaction(event)"><label class="formlabel" id="fAmountLabel">${entryType==='transfer'?'转出金额':'金额'}</label><div class="amountrow"><input class="field amountinput" id="fAmount" type="number" oninput="syncTransferArrivalAmount()" min="0.01" max="999999999999" step="0.01" inputmode="decimal" placeholder="0.00" required value="${t?.amount??''}"><div class="currencytoggle" id="txCurrencyToggle"><button type="button" id="curBtnEUR" onclick="setTxCurrency('EUR')" aria-label="欧元">€</button><button type="button" id="curBtnCNY" onclick="setTxCurrency('CNY')" aria-label="人民币">¥</button></div></div><div id="categoriesArea"><label class="formlabel">分类</label><div class="catpicker" id="catPicker"></div><div id="subChoiceDisplay" class="subchoice"></div></div><div class="twocol"><div><label class="formlabel">日期</label><div class="date-display-wrap"><span class="date-display-text" id="fDateText">${esc(t?.date||day||today())}</span><span class="date-display-icon" aria-hidden="true">▣</span><input id="fDate" class="date-picker-overlay" type="date" required aria-label="选择日期" value="${esc(t?.date||day||today())}" onchange="syncEntryDate()"></div></div><div><label class="formlabel" id="fAccountLabel">付款/收款方式</label><select class="field" id="fAccount" onchange="handleAccountCurrencyChange()">${options}</select></div></div><div id="toAccountArea" style="display:none"><label class="formlabel">转入账户</label><select class="field" id="fToAccount" onchange="updateTxCurrencies(true)">${options}</select><label class="formlabel" id="arrivalLabel">到账金额</label><input class="field" type="number" min="0.01" step="0.01" id="fToAmount" value="${t?.toAmount??(t?.type==='transfer'?'':t?.amount??'')}" placeholder="实际到账金额"><p class="smallnote" id="exchangeHint"></p></div><p class="smallnote" id="txCurrencyHint">金额按所选付款方式的币种记录。</p><label class="formlabel" id="fNoteLabel">备注（选填）</label><input class="field" id="fNote" maxlength="100" placeholder="" value="${esc(t?.note||'')}"><div class="modalfooter">${edit?'<button type="button" class="btn" style="color:var(--red)" onclick="deleteTransaction()">删除</button>':''}<button type="button" class="btn" onclick="closeModal()">取消</button><button type="button" class="btn primary" onclick="submitTransaction(event)">保存记录</button></div><div id="txError" role="alert" aria-live="assertive" style="display:none;margin-top:12px;padding:12px;border:1px solid #ef6d75;border-radius:10px;color:#c63d4e;background:#fff0f1;line-height:1.6"></div></form>`);if(t)document.getElementById('fAccount').value=t.account;if(t?.toAccount)document.getElementById('fToAccount').value=t.toAccount;else if(data.accounts.length>1)document.getElementById('fToAccount').selectedIndex=1;setEntryType(entryType);setTxCurrency(selectedTxCurrency,false);updateTxCurrencies();if(entryType==='transfer'&&!t){const from=acct(document.getElementById('fAccount').value),to=acct(document.getElementById('fToAccount').value);if(from&&to&&from.currency!==to.currency)document.getElementById('fToAmount').value='';}if(!data.accounts.length)toast('请先创建账户')}
+let editingId=null,entryType='expense',chosenCat='超市买菜',chosenSub='',selectedTxCurrency='EUR';function openTransaction(day=null,type=null,edit=null){editingId=edit;let t=edit?data.transactions.find(t=>t.id===edit):null;if(edit&&!t)return;entryType=t?.type||type||'expense';chosenCat=t?.category||(entryType==='income'?'工资':(catSet('expense')[0]?.name||'超市买菜'));chosenSub=t?.subcategory||'';selectedTxCurrency=t?.currency||acct(t?.account)?.currency||data.currency||'EUR';let options=data.accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)} (${a.currency||'EUR'})</option>`).join('');modal(`<div class="modalhead"><h2>${edit?'编辑交易':'记一笔'}</h2><button class="close" onclick="closeModal()">✕</button></div><div class="seg" id="typeSeg"><button onclick="setEntryType('expense')" data-type="expense">支出</button><button onclick="setEntryType('income')" data-type="income">收入</button><button onclick="setEntryType('transfer')" data-type="transfer">划账</button></div><div id="recEntryShortcut" style="margin:12px 0 0"><button type="button" class="btn" style="width:100%;text-align:center" onclick="openRecurringExpenses()">管理每月固定支出</button></div><form id="txForm" novalidate onsubmit="event.preventDefault();submitTransaction(event)"><label class="formlabel" id="fAmountLabel">${entryType==='transfer'?'转出金额':'金额'}</label><div class="amountrow"><input class="field amountinput" id="fAmount" type="number" oninput="syncTransferArrivalAmount()" min="0.01" max="999999999999" step="0.01" inputmode="decimal" placeholder="0.00" required value="${t?.amount??''}"><div class="currencytoggle" id="txCurrencyToggle"><button type="button" id="curBtnEUR" onclick="setTxCurrency('EUR')" aria-label="欧元">€</button><button type="button" id="curBtnCNY" onclick="setTxCurrency('CNY')" aria-label="人民币">¥</button></div></div><div id="categoriesArea"><label class="formlabel">分类</label><div class="catpicker" id="catPicker"></div><div id="subChoiceDisplay" class="subchoice"></div></div><div class="twocol"><div><label class="formlabel">日期</label><div class="date-display-wrap"><span class="date-display-text" id="fDateText">${esc(t?.date||day||today())}</span><span class="date-display-icon" aria-hidden="true">▣</span><input id="fDate" class="date-picker-overlay" type="date" required aria-label="选择日期" value="${esc(t?.date||day||today())}" onchange="syncEntryDate()"></div></div><div><label class="formlabel" id="fAccountLabel">付款/收款方式</label><select class="field" id="fAccount" onchange="handleAccountCurrencyChange()">${options}</select></div></div><div id="toAccountArea" style="display:none"><label class="formlabel">转入账户</label><select class="field" id="fToAccount" onchange="updateTxCurrencies(true)">${options}</select><label class="formlabel" id="arrivalLabel">到账金额</label><input class="field" type="number" min="0.01" step="0.01" id="fToAmount" value="${t?.toAmount??(t?.type==='transfer'?'':t?.amount??'')}" placeholder="实际到账金额"><p class="smallnote" id="exchangeHint"></p></div><p class="smallnote" id="txCurrencyHint">金额按所选付款方式的币种记录。</p><label class="formlabel" id="fNoteLabel">备注（选填）</label><input class="field" id="fNote" maxlength="100" placeholder="" value="${esc(t?.note||'')}"><div class="modalfooter">${edit?'<button type="button" class="btn" style="color:var(--red)" onclick="deleteTransaction()">删除</button>':''}<button type="button" class="btn" onclick="closeModal()">取消</button><button type="button" class="btn primary" onclick="submitTransaction(event)">保存记录</button></div><div id="txError" role="alert" aria-live="assertive" style="display:none;margin-top:12px;padding:12px;border:1px solid #ef6d75;border-radius:10px;color:#c63d4e;background:#fff0f1;line-height:1.6"></div></form>`);if(t)document.getElementById('fAccount').value=t.account;if(t?.toAccount)document.getElementById('fToAccount').value=t.toAccount;else if(data.accounts.length>1)document.getElementById('fToAccount').selectedIndex=1;setEntryType(entryType);setTxCurrency(selectedTxCurrency,false);updateTxCurrencies();if(entryType==='transfer'&&!t){const from=acct(document.getElementById('fAccount').value),to=acct(document.getElementById('fToAccount').value);if(from&&to&&from.currency!==to.currency)document.getElementById('fToAmount').value='';}if(!data.accounts.length)toast('请先创建账户')}
 function setTxCurrency(cur,syncAccount=true){selectedTxCurrency=cur;let eur=document.getElementById('curBtnEUR'),cny=document.getElementById('curBtnCNY');if(eur)eur.classList.toggle('active',cur==='EUR');if(cny)cny.classList.toggle('active',cur==='CNY');const wrap=document.getElementById('txCurrencyToggle');if(wrap)wrap.style.display=entryType==='transfer'?'none':'flex';if(syncAccount){const select=document.getElementById('fAccount');if(select){const current=acct(select.value);if(!current||current.currency!==cur){const found=data.accounts.find(a=>(a.currency||'EUR')===cur);if(found)select.value=found.id}}}updateTxCurrencies()}function handleAccountCurrencyChange(){if(entryType==='transfer'){updateTxCurrencies(true);return;}const current=acct(document.getElementById('fAccount')?.value);if(current)selectedTxCurrency=current.currency||'EUR';setTxCurrency(selectedTxCurrency,false)}function updateTxCurrencies(changed=false){const a=acct(document.getElementById('fAccount')?.value),b=acct(document.getElementById('fToAccount')?.value),cur=entryType==='transfer'?(a?.currency||'EUR'):selectedTxCurrency;const x=document.getElementById('txCurrencyHint');if(x)x.textContent=entryType==='transfer'?'划账只改变两个账户的余额，不计入收入或支出。':'当前金额币种：'+(cur==='CNY'?'¥ 人民币':'€ 欧元');const y=document.getElementById('exchangeHint');if(y)y.textContent=a&&b?'转出 '+(a.currency||'EUR')+' → 到账 '+(b.currency||'EUR')+'；跨币种请填实际到账金额，兑换不计入收支。':'';const label=document.getElementById('arrivalLabel');if(label)label.textContent='实际到账金额（'+(b?.currency||'EUR')+'）';if(entryType==='transfer'&&a&&b){if((a.currency||'EUR')===(b.currency||'EUR'))syncTransferArrivalAmount();else if(changed){const arrived=document.getElementById('fToAmount');if(arrived)arrived.value='';}}}
 function syncTransferArrivalAmount(){
  if(entryType!=='transfer')return;
  const from=acct(document.getElementById('fAccount')?.value),to=acct(document.getElementById('fToAccount')?.value),input=document.getElementById('fToAmount');
  if(input&&from&&to&&(from.currency||'EUR')===(to.currency||'EUR'))input.value=document.getElementById('fAmount')?.value||'';
 }
-function setEntryType(type){entryType=type;document.getElementById('txForm')?.classList.toggle('transfer-layout',type==='transfer');document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('active',b.dataset.type===type));document.getElementById('categoriesArea').style.display=type==='transfer'?'none':'block';document.getElementById('toAccountArea').style.display=type==='transfer'?'block':'none';const wrap=document.getElementById('txCurrencyToggle');if(wrap)wrap.style.display=type==='transfer'?'none':'flex';const al=document.getElementById('fAmountLabel');if(al)al.textContent=type==='transfer'?'转出金额':'金额';const fromLabel=document.getElementById('fAccountLabel');if(fromLabel)fromLabel.textContent=type==='transfer'?'转出账户':'付款/收款方式';if(type==='transfer'){updateTxCurrencies();return;}let cats=catSet(type);if(!cats.some(c=>c.name===chosenCat)&&!editingId){chosenCat=cats[0]?.name||'';chosenSub='';}document.getElementById('catPicker').innerHTML=(editingId&&!cats.some(c=>c.name===chosenCat)?`<button type="button" class="catbtn active" title="历史已删除分类"><span>📁</span>${esc(chosenCat)}</button>`:'')+cats.map((c,i)=>`<button type="button" class="catbtn ${c.name===chosenCat?'active':''}" onclick="chooseCat(${i})"><span>${esc(c.icon)}</span>${esc(c.name)}</button>`).join('');let current=cats.find(c=>c.name===chosenCat),subs=current?.children||[];if(subs.length&&!subs.includes(chosenSub))chosenSub='';if(!subs.length)chosenSub='';updateSubChoiceDisplay(current);}
+function setEntryType(type){entryType=type;document.getElementById('txForm')?.classList.toggle('transfer-layout',type==='transfer');const recShortcut=document.getElementById('recEntryShortcut');if(recShortcut)recShortcut.style.display=type==='expense'?'block':'none';document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('active',b.dataset.type===type));document.getElementById('categoriesArea').style.display=type==='transfer'?'none':'block';document.getElementById('toAccountArea').style.display=type==='transfer'?'block':'none';const wrap=document.getElementById('txCurrencyToggle');if(wrap)wrap.style.display=type==='transfer'?'none':'flex';const al=document.getElementById('fAmountLabel');if(al)al.textContent=type==='transfer'?'转出金额':'金额';const fromLabel=document.getElementById('fAccountLabel');if(fromLabel)fromLabel.textContent=type==='transfer'?'转出账户':'付款/收款方式';if(type==='transfer'){updateTxCurrencies();return;}let cats=catSet(type);if(!cats.some(c=>c.name===chosenCat)&&!editingId){chosenCat=cats[0]?.name||'';chosenSub='';}document.getElementById('catPicker').innerHTML=(editingId&&!cats.some(c=>c.name===chosenCat)?`<button type="button" class="catbtn active" title="历史已删除分类"><span>📁</span>${esc(chosenCat)}</button>`:'')+cats.map((c,i)=>`<button type="button" class="catbtn ${c.name===chosenCat?'active':''}" onclick="chooseCat(${i})"><span>${esc(c.icon)}</span>${esc(c.name)}</button>`).join('');let current=cats.find(c=>c.name===chosenCat),subs=current?.children||[];if(subs.length&&!subs.includes(chosenSub))chosenSub='';if(!subs.length)chosenSub='';updateSubChoiceDisplay(current);}
 function updateSubChoiceDisplay(currentCat=null){const box=document.getElementById('subChoiceDisplay');if(!box)return;const cat=currentCat||catSet(entryType).find(c=>c.name===chosenCat);const subs=cat?.children||[];if(!subs.length){box.className='subchoice';box.innerHTML='';return;}if(chosenSub){box.className='subchoice show';box.innerHTML=`已选子分类 / 商家：<b>${esc(chosenSub)}</b><button type="button" class="subchoice-action" onclick="reopenCurrentSubcategoryPicker()">重新选择</button>`;}else{box.className='subchoice';box.innerHTML='';}}
 function reopenCurrentSubcategoryPicker(){const cats=catSet(entryType);const index=cats.findIndex(c=>c.name===chosenCat);if(index>-1)openSubcategoryPicker(index);}
 function chooseCat(index){const current=catSet(entryType)[index];if(!current)return;chosenCat=current.name;const subs=current.children||[];if(!subs.includes(chosenSub))chosenSub='';if(!subs.length)chosenSub='';setEntryType(entryType);openSubcategoryPicker(index);}
@@ -3750,5 +3771,246 @@ window.addEventListener('visibilitychange',()=>{if(!document.hidden&&user&&!pend
     opened.forEach(row=>setMemoSwipeDistance(row,0,false));
   },true);
 })();
+</script>
+<script id="v269-recurring-expenses">
+/* Monthly recurring charges are stored in the existing ledger data object and synced with it. */
+function recurringPlans(){if(!Array.isArray(data.recurringExpenses))data.recurringExpenses=[];return data.recurringExpenses;}
+const recurringYM=(date)=>date.slice(0,7);
+function recurringLocalToday(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function recurringDueDate(month,day){const [y,m]=month.split('-').map(Number);const last=new Date(y,m,0).getDate();return `${month}-${String(Math.min(Math.max(1,Number(day)||1),last)).padStart(2,'0')}`;}
+function recurringNextMonth(month){let [y,m]=month.split('-').map(Number);return m===12?`${y+1}-01`:`${y}-${String(m+1).padStart(2,'0')}`;}
+function recurringProcessed(plan,month){return (plan.processedMonths||[]).includes(month)||data.transactions.some(t=>t.recurringId===plan.id&&t.recurringMonth===month);}
+function recurringAccountOptions(cur,selected){return data.accounts.filter(a=>(a.currency||'EUR')===cur).map(a=>`<option value="${esc(a.id)}" ${a.id===selected?'selected':''}>${esc(a.icon||'💳')} ${esc(a.name)}${a.kind==='credit'?' · 信用卡':''}</option>`).join('');}
+function recurringCreateTransaction(plan,month){
+ if(recurringProcessed(plan,month))return false;
+ const account=acct(plan.account);if(!account||(account.currency||'EUR')!==plan.currency)return false;
+ const due=recurringDueDate(month,plan.day);
+ const record={id:`rec-${plan.id}-${month}`,type:'expense',amount:Number(plan.amount),currency:plan.currency,toAmount:null,date:due,account:plan.account,toAccount:null,category:plan.category,subcategory:plan.subcategory||'',note:plan.name,created:new Date().toISOString(),recurringId:plan.id,recurringMonth:month};
+ data.transactions.push(record);
+ if(!Array.isArray(plan.processedMonths))plan.processedMonths=[];
+ plan.processedMonths.push(month);
+ return true;
+}
+// The browser cannot run when the app is closed. Catch up on launch and on focus.
+let recurringBusy=false;
+function processRecurringDue(){
+ if(recurringBusy)return false;
+ recurringBusy=true;
+ try{
+  const now=recurringLocalToday(),thisMonth=recurringYM(now);
+  let changed=false;
+  for(const plan of recurringPlans()){
+   if(plan.mode!=='auto'||plan.paused)continue;
+   if(!/^\d{4}-\d{2}$/.test(plan.startMonth||''))continue;
+   let month=plan.startMonth;
+   // Finite iteration also protects against corrupt account data.
+   for(let i=0;i<240&&month<=thisMonth;i++,month=recurringNextMonth(month)){
+    if(recurringDueDate(month,plan.day)>now)break;
+    if(recurringCreateTransaction(plan,month))changed=true;
+   }
+  }
+  if(changed){try{save();}catch(e){console.error('固定支出保存失败',e);}}
+  return changed;
+ }finally{recurringBusy=false;}
+}
+function recurringCurrentStatus(plan){
+ const now=recurringLocalToday(),month=recurringYM(now),due=recurringDueDate(month,plan.day);
+ if(plan.paused)return {text:'已暂停',cls:''};
+ if(plan.startMonth>month)return {text:'尚未开始',cls:''};
+ if(recurringProcessed(plan,month))return {text:'本月已记录',cls:'done'};
+ if(due<=now)return {text:plan.mode==='auto'?'待自动入账':'待确认扣费',cls:'due'};
+ return {text:`${Number(due.slice(8))} 日扣费`,cls:''};
+}
+function recurringTotals(){let eur=0,cny=0;for(const p of recurringPlans())if(!p.paused){if(p.currency==='EUR')eur+=Number(p.amount)||0;else if(p.currency==='CNY')cny+=Number(p.amount)||0;}return {eur,cny};}
+function openRecurringExpenses(){
+ processRecurringDue();
+ const plans=recurringPlans(),totals=recurringTotals();
+ modal(`<div class="modalhead"><h2>每月固定支出</h2><button class="close" onclick="closeModal()">✕</button></div>
+ <div class="rec-summary"><div><small>每月预计 · EUR</small><strong>${money(totals.eur,false,'EUR')}</strong></div><div><small>每月预计 · CNY</small><strong>${money(totals.cny,false,'CNY')}</strong></div></div>
+ <div class="rec-panel-actions"><button type="button" class="btn primary" onclick="openRecurringEdit()">＋ 添加固定支出</button></div>
+ <div>${plans.length?plans.map(plan=>{
+ const status=recurringCurrentStatus(plan),a=acct(plan.account),icon=catSet('expense').find(c=>c.name===plan.category)?.icon||'🔁';
+ const now=recurringLocalToday(),month=recurringYM(now),overdue=[];
+ if(!plan.paused&&plan.mode==='confirm'){
+   let m=plan.startMonth;for(let i=0;i<120&&m<=month;i++,m=recurringNextMonth(m)){
+    if(recurringDueDate(m,plan.day)<=now&&!recurringProcessed(plan,m))overdue.push(m);
+   }
+ }
+ return `<div class="rec-item"><div class="rec-item-main"><span class="rec-icon">${esc(icon)}</span><div class="rec-item-info"><b>${esc(plan.name)}</b><small>每月 ${Number(plan.day)} 日 · ${esc(plan.category)}${plan.subcategory?' / '+esc(plan.subcategory):''}</small><small>${esc(a?.name||'账户已删除')} · ${plan.mode==='auto'?'自动记账':'确认后记账'}</small></div><span class="rec-item-amount">${money(plan.amount,false,plan.currency)}</span></div>
+ <div class="rec-item-bottom"><span class="rec-status ${status.cls}">${esc(status.text)}${overdue.length?` · ${overdue.length} 期待确认`:''}</span><div class="rec-actions">${overdue.length?`<button class="btn primary" onclick="confirmRecurringPayment('${plan.id}','${overdue[0]}')">确认 ${overdue[0].slice(5)} 月</button>`:''}<button class="btn" onclick="openRecurringEdit('${plan.id}')">编辑</button><button class="btn" onclick="toggleRecurringPause('${plan.id}')">${plan.paused?'恢复':'暂停'}</button></div></div></div>`;
+ }).join(''):'<div class="empty">暂无固定支出，点击上方按钮添加。</div>'}</div>
+ <div class="modalfooter"><button type="button" class="btn primary" onclick="closeModal()">完成</button></div>`);
+}
+let recurringDraftCurrency='EUR';
+function openRecurringEdit(planId=null){
+ const p=recurringPlans().find(x=>x.id===planId);
+ recurringDraftCurrency=p?.currency||'EUR';
+ const cats=catSet('expense');
+ modal(`<div class="modalhead"><h2>${p?'编辑':'新增'}固定支出</h2><button class="close" onclick="openRecurringExpenses()">✕</button></div>
+ <form id="recForm" novalidate onsubmit="event.preventDefault();saveRecurringPlan()">
+ <label class="formlabel">名称</label><input class="field" id="recName" maxlength="60" placeholder="如 Netflix、Iliad 电话费" value="${esc(p?.name||'')}" required>
+ <label class="formlabel">每月固定金额</label><div class="amountrow"><input class="field amountinput" id="recAmount" type="number" inputmode="decimal" min="0.01" max="999999999999" step="0.01" placeholder="12.99" value="${p?.amount??''}" required><div class="rec-currency-toggle"><button id="recCurEUR" type="button" onclick="setRecurringCurrency('EUR')">€</button><button id="recCurCNY" type="button" onclick="setRecurringCurrency('CNY')">¥</button></div></div>
+ <div class="twocol"><div><label class="formlabel">每月扣费日</label><select class="field" id="recDay">${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${Number(p?.day||1)===i+1?'selected':''}>${i+1} 日</option>`).join('')}</select></div>
+ <div><label class="formlabel">开始月份</label><input class="field" type="month" id="recStartMonth" value="${esc(p?.startMonth||recurringYM(recurringLocalToday()))}" required></div></div>
+ <label class="formlabel">支出分类</label><select class="field" id="recCategory" onchange="updateRecurringSubcategories()">${cats.map(c=>`<option value="${esc(c.name)}" ${c.name===p?.category?'selected':''}>${esc(c.icon)} ${esc(c.name)}</option>`).join('')}</select>
+ <label class="formlabel">子分类（可选）</label><select class="field" id="recSubcategory"></select>
+ <label class="formlabel">付款账户</label><select class="field" id="recAccount"></select><div class="rec-muted" id="recAccountHint"></div>
+ <label class="formlabel">记账方式</label><div class="seg" id="recModeGroup"><button type="button" data-mode="confirm" onclick="setRecurringMode('confirm')">扣费后确认</button><button type="button" data-mode="auto" onclick="setRecurringMode('auto')">到期自动记账</button></div>
+ <p class="rec-muted" style="margin-top:10px">每月 29–31 日遇到较短月份时按当月最后一天记录。自动模式在打开 App 后补录，不会在 App 关闭时后台扣款。</p>
+ <p class="rec-form-error" id="recError" role="alert"></p>
+ <div class="modalfooter">${p?`<button type="button" class="btn" style="color:var(--red)" onclick="deleteRecurringPlan('${p.id}')">删除</button>`:''}<button type="button" class="btn" onclick="openRecurringExpenses()">取消</button><button type="submit" class="btn primary">保存</button></div></form>`);
+ const cat=document.getElementById('recCategory');if(!p&&cats.length)cat.value=cats[0].name;
+ updateRecurringSubcategories(p?.subcategory||'');
+ updateRecurringAccount(p?.account);
+ setRecurringCurrency(recurringDraftCurrency,p?.account);
+ setRecurringMode(p?.mode||'confirm');
+ document.getElementById('recForm').dataset.planId=p?.id||'';
+}
+function setRecurringCurrency(cur,preferredAccount){
+ recurringDraftCurrency=cur;
+ ['EUR','CNY'].forEach(c=>document.getElementById('recCur'+c)?.classList.toggle('active',cur===c));
+ updateRecurringAccount(preferredAccount);
+}
+function updateRecurringAccount(preferred){
+ const el=document.getElementById('recAccount');if(!el)return;
+ const selected=preferred||el.value;
+ el.innerHTML=recurringAccountOptions(recurringDraftCurrency,selected);
+ const hint=document.getElementById('recAccountHint');
+ if(hint)hint.textContent=el.options.length?'账户币种与固定支出币种一致。':'没有对应币种的账户，请先在「账户」页面添加。';
+}
+function updateRecurringSubcategories(wanted){
+ const cat=catSet('expense').find(c=>c.name===document.getElementById('recCategory')?.value);
+ const el=document.getElementById('recSubcategory');if(!el)return;
+ el.innerHTML='<option value="">不选子分类</option>'+(cat?.children||[]).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+ if(wanted&&(cat?.children||[]).includes(wanted))el.value=wanted;
+}
+function setRecurringMode(mode){document.querySelectorAll('#recModeGroup button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));document.getElementById('recModeGroup').dataset.mode=mode;}
+function saveRecurringPlan(){
+ const form=document.getElementById('recForm');if(!form)return;
+ const error=document.getElementById('recError'),fail=msg=>{error.textContent=msg;return false;};
+ const name=document.getElementById('recName').value.trim(),amount=Number(document.getElementById('recAmount').value),day=Number(document.getElementById('recDay').value),startMonth=document.getElementById('recStartMonth').value,category=document.getElementById('recCategory').value,subcategory=document.getElementById('recSubcategory').value,account=document.getElementById('recAccount').value,mode=document.getElementById('recModeGroup').dataset.mode;
+ if(!name)return fail('请输入固定支出名称。');
+ if(!isMoney(amount)||amount>999999999999)return fail('请输入有效金额。');
+ if(!Number.isInteger(day)||day<1||day>31)return fail('请选择扣费日。');
+ if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(startMonth))return fail('请选择开始月份。');
+ if(!catSet('expense').some(c=>c.name===category))return fail('请选择有效的支出分类。');
+ if(!acct(account)||(acct(account).currency||'EUR')!==recurringDraftCurrency)return fail('请选择币种匹配的付款账户。');
+ if(!['auto','confirm'].includes(mode))return fail('请选择记账方式。');
+ const original=structuredClone(recurringPlans());
+ const key=form.dataset.planId,old=recurringPlans().find(x=>x.id===key);
+ const values={name,amount:Math.round(amount*100)/100,day,startMonth,category,subcategory,account,currency:recurringDraftCurrency,mode};
+ if(old)Object.assign(old,values);
+ else recurringPlans().push({id:id(),...values,paused:false,processedMonths:[]});
+ try{save();}catch(e){data.recurringExpenses=original;return fail('无法保存：'+e.message);}
+ processRecurringDue();openRecurringExpenses();render();
+}
+function confirmRecurringPayment(planId,month){
+ const p=recurringPlans().find(x=>x.id===planId);
+ if(!p||p.paused||p.mode!=='confirm')return;
+ if(month<p.startMonth||recurringDueDate(month,p.day)>recurringLocalToday())return;
+ if(recurringProcessed(p,month)){openRecurringExpenses();return;}
+ const oldTxCount=data.transactions.length,oldProcessed=[...(p.processedMonths||[])];
+ if(!recurringCreateTransaction(p,month)){toast('付款账户不存在或币种不匹配，请编辑固定支出。','无法入账','!');return;}
+ try{save();}catch(e){data.transactions.splice(oldTxCount);p.processedMonths=oldProcessed;toast('保存失败：'+e.message,'无法入账','!');return;}
+ openRecurringExpenses();render();
+}
+function toggleRecurringPause(key){const p=recurringPlans().find(x=>x.id===key);if(!p)return;p.paused=!p.paused;save();openRecurringExpenses();render();}
+function deleteRecurringPlan(key){
+ const p=recurringPlans().find(x=>x.id===key);if(!p)return;
+ showDialog(`<div class="dialogicon">🗑️</div><h3>删除固定支出？</h3><p>删除「${esc(p.name)}」的定期扣费计划。以前已经记录的交易会保留。</p><div class="dialogactions"><button type="button" class="btn" onclick="closeDialog()">取消</button><button type="button" class="btn danger" onclick="confirmDeleteRecurringPlan('${p.id}')">确认删除</button></div>`);
+}
+function confirmDeleteRecurringPlan(key){data.recurringExpenses=recurringPlans().filter(x=>x.id!==key);save();closeDialog();openRecurringExpenses();render();}
+// Respond to returning from another app, including the iPhone home screen.
+if(processRecurringDue())render();
+window.addEventListener('focus',()=>{if(processRecurringDue())render();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){processRecurringDue();scheduleRecurringBalanceReminderCheck();}});
+
+// V270: once-per-plan-per-month insufficient-funds warning, converted into a normal memo on acknowledgement.
+// This is an in-app alert: browsers cannot pop it up while the web app is fully closed.
+let recurringBalanceCheckTimer=0;
+let recurringBalanceWarningOpen=false;
+function scheduleRecurringBalanceReminderCheck(){
+ clearTimeout(recurringBalanceCheckTimer);
+ recurringBalanceCheckTimer=setTimeout(checkRecurringBalanceReminders,320);
+}
+function recurringDateOrdinal(iso){
+ const [year,month,day]=iso.split('-').map(Number);
+ return Math.floor(Date.UTC(year,month-1,day)/86400000);
+}
+function findRecurringInsufficientBalance(){
+ const todayDate=recurringLocalToday();
+ const current=recurringYM(todayDate);
+ const dueMonths=[current,recurringNextMonth(current)];
+ const todayOrd=recurringDateOrdinal(todayDate);
+ for(const plan of recurringPlans()){
+  if(plan.paused||!['auto','confirm'].includes(plan.mode))continue;
+  if(!Number.isFinite(Number(plan.amount))||Number(plan.amount)<=0)continue;
+  const account=acct(plan.account);
+  // A credit card's "balance" in this app is debt, not remaining credit limit.
+  // Only ordinary money accounts support a reliable insufficient-funds comparison.
+  if(!account||account.kind==='credit'||(account.currency||'EUR')!==plan.currency)continue;
+  for(const month of dueMonths){
+   if(month<(plan.startMonth||'9999-99')||recurringProcessed(plan,month))continue;
+   if((plan.balanceAlertMonths||[]).includes(month))continue;
+   const due=recurringDueDate(month,plan.day);
+   const days=recurringDateOrdinal(due)-todayOrd;
+   if(days<1||days>7)continue;
+   const available=balance(account.id);
+   if(!Number.isFinite(available)||available>=Number(plan.amount))continue;
+   return {plan,month,due,days,account,available};
+  }
+ }
+ return null;
+}
+function checkRecurringBalanceReminders(){
+ if(document.hidden||recurringBalanceWarningOpen)return;
+ const mod=document.getElementById('modalWrap'),dlg=document.getElementById('dialogWrap');
+ if(mod?.classList.contains('open')||dlg?.classList.contains('open'))return;
+ const missing=findRecurringInsufficientBalance();
+ if(!missing)return;
+ const {plan,month,due,days,account,available}=missing;
+ recurringBalanceWarningOpen=true;
+ const message=`<div class="dialogicon" style="background:#fff7e7;border-color:#ffe4ad;color:#c3861a">⚠️</div><h3>固定支出余额不足</h3>
+ <p>「${esc(plan.name)}」将于 <b>${esc(due)}</b> 扣费（还有 ${days} 天）。</p>
+ <p style="margin-top:8px">付款账户：${esc(account.name)}<br>当前余额：<b>${money(available,false,plan.currency)}</b><br>预计扣费：<b>${money(plan.amount,false,plan.currency)}</b><br>预计不足：<b style="color:var(--red)">${money(Math.max(0,Number(plan.amount)-available),false,plan.currency)}</b></p>
+ <p class="smallnote" style="margin-top:9px">点击确定后，将自动加入「提醒事项」。同一项目本次扣费只提醒一次。</p>
+ <div class="dialogactions"><button type="button" class="btn primary" onclick="acknowledgeRecurringBalanceWarning('${esc(plan.id)}','${month}')">确定，加入提醒事项</button></div>`;
+ showDialog(message);
+}
+function acknowledgeRecurringBalanceWarning(planId,month){
+ const plan=recurringPlans().find(p=>String(p.id)===String(planId));
+ if(!plan){recurringBalanceWarningOpen=false;closeDialog();return;}
+ const marker=`${plan.id}:${month}`;
+ const due=recurringDueDate(month,plan.day);
+ const account=acct(plan.account);
+ const text=`⚠️ ${plan.name}：${due.slice(5).replace('-','月')}日扣费 ${money(plan.amount,false,plan.currency)}，请检查${account?.name||'付款账户'}余额`;
+ const oldAlerts=[...(plan.balanceAlertMonths||[])];
+ const existing=memoItems().some(m=>m.recurringBalanceAlertKey===marker);
+ let newMemo=null;
+ if(!existing){
+  newMemo={id:id(),text,createdAt:Date.now(),recurringBalanceAlertKey:marker};
+  memoItems().push(newMemo);
+ }
+ if(!Array.isArray(plan.balanceAlertMonths))plan.balanceAlertMonths=[];
+ if(!plan.balanceAlertMonths.includes(month))plan.balanceAlertMonths.push(month);
+ try{save();}
+ catch(err){
+  plan.balanceAlertMonths=oldAlerts;
+  if(newMemo)data.memoItems=memoItems().filter(m=>m!==newMemo);
+  toast('提醒事项保存失败：'+(err?.message||'存储异常'),'保存失败','!');
+  recurringBalanceWarningOpen=false;closeDialog();return;
+ }
+ recurringBalanceWarningOpen=false;
+ closeDialog();
+ if(typeof renderMemoItems==='function')renderMemoItems();
+ scheduleRecurringBalanceReminderCheck();
+}
+// If a dialog is dismissed without acknowledgement, allow the warning to be checked again later.
+document.getElementById('dialogWrap')?.addEventListener('click',e=>{
+ if(e.target===e.currentTarget&&recurringBalanceWarningOpen){recurringBalanceWarningOpen=false;closeDialog();}
+});
+window.addEventListener('focus',scheduleRecurringBalanceReminderCheck);
+// On app launch, Firebase cloud hydration and other setup may still be finishing.
+scheduleRecurringBalanceReminderCheck();
 </script>
 </body></html>
