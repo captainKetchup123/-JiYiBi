@@ -2481,8 +2481,16 @@ function initSubcategoryPointerGestures(grid){
    renderSubcategoryPickerDialog();return;
   }
   const edit=subcategoryPickerState.editMode&&!g.moved&&!g.longTriggered;
+  // iOS touchstart has preventDefault() to block native text selection, so
+  // Safari does not synthesize the normal click for a quick tap.
+  // Select directly on touchend only in ordinary selection mode.
+  const selectOnTouch=g.id===-999&&!subcategoryPickerState.editMode&&!g.moved&&!g.longTriggered;
   const index=g.index,catIndex=subcategoryPickerState.catIndex;
   stop();
+  if(selectOnTouch){
+   selectSubcategoryByIndex(catIndex,index);
+   return;
+  }
   if(edit){
    clearTimeout(subcategoryPickerState.clickEditTimer);
    // Focus within the user's pointerup event. Delayed focus often fails to summon
