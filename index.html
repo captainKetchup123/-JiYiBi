@@ -3881,6 +3881,19 @@ function setRecurringBalanceAlertEnabled(enabled){
  if(!enabled)clearTimeout(recurringBalanceCheckTimer);
  else scheduleRecurringBalanceReminderCheck();
 }
+// Month selector uses the same native <select> control as the billing day.
+// Avoid iOS WebKit's intrinsic minimum width/height for input[type=month].
+function recurringMonthOptions(selected){
+ const baseYear=new Date().getFullYear();
+ const selectedYear=Number(String(selected||'').slice(0,4))||baseYear;
+ const start=Math.min(baseYear-10,selectedYear),end=Math.max(baseYear+15,selectedYear);
+ const options=[];
+ for(let year=start;year<=end;year++)for(let month=1;month<=12;month++){
+  const value=`${year}-${String(month).padStart(2,'0')}`;
+  options.push(`<option value="${value}"${value===selected?' selected':''}>${year}年${month}月</option>`);
+ }
+ return options.join('');
+}
 let recurringDraftCurrency='EUR';
 function openRecurringEdit(planId=null){
  const p=recurringPlans().find(x=>x.id===planId);
@@ -3891,7 +3904,7 @@ function openRecurringEdit(planId=null){
  <label class="formlabel">名称</label><input class="field" id="recName" maxlength="60" placeholder="如 Netflix、Iliad 电话费" value="${esc(p?.name||'')}" required>
  <label class="formlabel">每月固定金额</label><div class="amountrow"><input class="field amountinput" id="recAmount" type="number" inputmode="decimal" min="0.01" max="999999999999" step="0.01" placeholder="12.99" value="${p?.amount??''}" required><div class="rec-currency-toggle"><button id="recCurEUR" type="button" onclick="setRecurringCurrency('EUR')">€</button><button id="recCurCNY" type="button" onclick="setRecurringCurrency('CNY')">¥</button></div></div>
  <div class="twocol"><div><label class="formlabel">每月扣费日</label><select class="field" id="recDay">${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${Number(p?.day||1)===i+1?'selected':''}>${i+1} 日</option>`).join('')}</select></div>
- <div><label class="formlabel">开始月份</label><input class="field" type="month" id="recStartMonth" value="${esc(p?.startMonth||recurringYM(recurringLocalToday()))}" required></div></div>
+ <div><label class="formlabel">开始月份</label><select class="field" id="recStartMonth" required>${recurringMonthOptions(p?.startMonth||recurringYM(recurringLocalToday()))}</select></div></div>
  <label class="formlabel">支出分类</label><select class="field" id="recCategory" onchange="updateRecurringSubcategories()">${cats.map(c=>`<option value="${esc(c.name)}" ${c.name===p?.category?'selected':''}>${esc(c.icon)} ${esc(c.name)}</option>`).join('')}</select>
  <label class="formlabel">子分类（可选）</label><select class="field" id="recSubcategory"></select>
  <label class="formlabel">付款账户</label><select class="field" id="recAccount"></select><div class="rec-muted" id="recAccountHint"></div>
@@ -4125,16 +4138,15 @@ body.jyb-modal-locked{position:fixed!important;width:100%!important;left:0!impor
 })();
 </script>
 
-<style id="v273-recurring-date-fields-alignment">
-/* Fixed expense form: both halves of the date row must use identical control geometry. */
-#recForm .twocol{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;}
+<style id="v274-recurring-date-fields-alignment">
+/* Both fields are native SELECTs: same box geometry and predictable iOS rendering. */
+#recForm .twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;}
 #recForm .twocol>div{min-width:0;width:100%;}
 #recForm #recDay,#recForm #recStartMonth{
  display:block;box-sizing:border-box;width:100%!important;min-width:0!important;max-width:100%!important;
  height:48px!important;min-height:48px!important;max-height:48px!important;
  margin:0;padding:10px 12px;border:1px solid #e3e9f2;border-radius:12px;
- background:var(--card);color:var(--text);font-size:16px;line-height:normal;
+ background:var(--card);color:var(--text);font-size:16px;font-weight:400;line-height:normal;
 }
-#recForm #recStartMonth::-webkit-datetime-edit{min-width:0;padding:0;}
 </style>
 </body></html>
