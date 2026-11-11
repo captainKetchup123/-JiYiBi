@@ -1228,6 +1228,37 @@
 .rec-muted{font-size:12px;color:var(--muted);line-height:1.6}
 @media(max-width:450px){.rec-summary strong{font-size:17px}.rec-item{padding:12px}.rec-actions .btn{padding:7px 8px}}
 </style>
+
+<style id="v271-recurring-alert-switch-and-mobile-dialog">
+/* 仅固定支出编辑/管理弹窗：防止横向溢出导致 iOS 整个窗口被左右拖动。 */
+#modalWrap:has(#recForm),#modalWrap:has(.rec-summary){overflow-x:hidden;overscroll-behavior-x:none;touch-action:pan-y;max-width:100vw;}
+#modalWrap:has(#recForm)>.modal,#modalWrap:has(.rec-summary)>.modal{
+ box-sizing:border-box;width:min(500px,calc(100vw - 24px));max-width:calc(100vw - 24px);
+ min-width:0;max-height:calc(100dvh - 24px);overflow-x:hidden;overflow-y:auto;
+ overscroll-behavior-x:none;overscroll-behavior-y:contain;touch-action:pan-y;
+}
+#recForm,#recForm>*{max-width:100%;min-width:0;box-sizing:border-box;}
+#recForm .twocol{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}
+#recForm .twocol>div{min-width:0;max-width:100%;}
+#recForm .field,#recForm input,#recForm select{min-width:0;max-width:100%;box-sizing:border-box;}
+#recForm .amountrow{min-width:0;width:100%;}
+#recForm .amountrow>.amountinput{flex:1 1 0;min-width:0;width:0;}
+#recForm .rec-currency-toggle{flex:0 0 auto;min-width:0;}
+#recForm .seg{min-width:0;max-width:100%;}
+#recForm .seg button{min-width:0;overflow-wrap:anywhere;padding-inline:5px;}
+.rec-alert-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:13px 14px;margin:14px 0 10px;border:1px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;}
+.rec-alert-toggle-label{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+.rec-alert-toggle-label strong{font-size:14px;color:var(--text);}
+.rec-alert-toggle-label small{font-size:12px;line-height:1.5;color:var(--muted);}
+.rec-alert-toggle input[type="checkbox"]{appearance:none;-webkit-appearance:none;flex:0 0 auto;
+ position:relative;width:48px;height:29px;border-radius:20px;background:#cbd2dd;border:0;
+ transition:background .2s ease;cursor:pointer;outline-offset:3px;}
+.rec-alert-toggle input[type="checkbox"]:checked{background:var(--blue);}
+.rec-alert-toggle input[type="checkbox"]:after{content:"";position:absolute;top:3px;left:3px;
+ width:23px;height:23px;border-radius:50%;background:white;box-shadow:0 1px 4px #0002;transition:transform .2s ease;}
+.rec-alert-toggle input[type="checkbox"]:checked:after{transform:translateX(19px);}
+</style>
 </head>
 <body>
 <svg class="glass-optics-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none">
@@ -3827,6 +3858,7 @@ function openRecurringExpenses(){
  const plans=recurringPlans(),totals=recurringTotals();
  modal(`<div class="modalhead"><h2>每月固定支出</h2><button class="close" onclick="closeModal()">✕</button></div>
  <div class="rec-summary"><div><small>每月预计 · EUR</small><strong>${money(totals.eur,false,'EUR')}</strong></div><div><small>每月预计 · CNY</small><strong>${money(totals.cny,false,'CNY')}</strong></div></div>
+ <label class="rec-alert-toggle"><span class="rec-alert-toggle-label"><strong>余额不足提前提醒</strong><small>扣费前 7 天内检查付款账户；余额不足时每次扣费只提醒一次，确认后加入提醒事项</small></span><input type="checkbox" aria-label="余额不足提前提醒" ${data.recurringBalanceAlertsEnabled!==false?'checked':''} onchange="setRecurringBalanceAlertEnabled(this.checked)"></label>
  <div class="rec-panel-actions"><button type="button" class="btn primary" onclick="openRecurringEdit()">＋ 添加固定支出</button></div>
  <div>${plans.length?plans.map(plan=>{
  const status=recurringCurrentStatus(plan),a=acct(plan.account),icon=catSet('expense').find(c=>c.name===plan.category)?.icon||'🔁';
@@ -3840,6 +3872,14 @@ function openRecurringExpenses(){
  <div class="rec-item-bottom"><span class="rec-status ${status.cls}">${esc(status.text)}${overdue.length?` · ${overdue.length} 期待确认`:''}</span><div class="rec-actions">${overdue.length?`<button class="btn primary" onclick="confirmRecurringPayment('${plan.id}','${overdue[0]}')">确认 ${overdue[0].slice(5)} 月</button>`:''}<button class="btn" onclick="openRecurringEdit('${plan.id}')">编辑</button><button class="btn" onclick="toggleRecurringPause('${plan.id}')">${plan.paused?'恢复':'暂停'}</button></div></div></div>`;
  }).join(''):'<div class="empty">暂无固定支出，点击上方按钮添加。</div>'}</div>
  <div class="modalfooter"><button type="button" class="btn primary" onclick="closeModal()">完成</button></div>`);
+}
+function setRecurringBalanceAlertEnabled(enabled){
+ const before=data.recurringBalanceAlertsEnabled;
+ data.recurringBalanceAlertsEnabled=!!enabled;
+ try{save();}catch(e){data.recurringBalanceAlertsEnabled=before;const checkbox=document.querySelector('.rec-alert-toggle input');if(checkbox)checkbox.checked=before!==false;toast('提醒设置保存失败','保存失败','!');return;}
+ // 关闭时立即取消尚未显示的检查；再次开启后在退出弹窗时按当日日期检查。
+ if(!enabled)clearTimeout(recurringBalanceCheckTimer);
+ else scheduleRecurringBalanceReminderCheck();
 }
 let recurringDraftCurrency='EUR';
 function openRecurringEdit(planId=null){
@@ -3938,6 +3978,7 @@ function recurringDateOrdinal(iso){
  return Math.floor(Date.UTC(year,month-1,day)/86400000);
 }
 function findRecurringInsufficientBalance(){
+ if(data.recurringBalanceAlertsEnabled===false)return null;
  const todayDate=recurringLocalToday();
  const current=recurringYM(todayDate);
  const dueMonths=[current,recurringNextMonth(current)];
@@ -3963,7 +4004,7 @@ function findRecurringInsufficientBalance(){
  return null;
 }
 function checkRecurringBalanceReminders(){
- if(document.hidden||recurringBalanceWarningOpen)return;
+ if(data.recurringBalanceAlertsEnabled===false||document.hidden||recurringBalanceWarningOpen)return;
  const mod=document.getElementById('modalWrap'),dlg=document.getElementById('dialogWrap');
  if(mod?.classList.contains('open')||dlg?.classList.contains('open'))return;
  const missing=findRecurringInsufficientBalance();
