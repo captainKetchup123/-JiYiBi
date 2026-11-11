@@ -4054,4 +4054,74 @@ window.addEventListener('focus',scheduleRecurringBalanceReminderCheck);
 // On app launch, Firebase cloud hydration and other setup may still be finishing.
 scheduleRecurringBalanceReminderCheck();
 </script>
+
+<style id="v272-modal-scroll-lock">
+/* Keep all overlay panels independently scrollable; never allow their scroll chain to reach the page. */
+html.jyb-modal-locked{overflow:hidden!important;overscroll-behavior:none!important;}
+body.jyb-modal-locked{position:fixed!important;width:100%!important;left:0!important;right:0!important;overflow:hidden!important;overscroll-behavior:none!important;}
+#modalWrap.open,#dialogWrap.open{overscroll-behavior:contain!important;touch-action:none;}
+#modalWrap.open>.modal,#dialogWrap.open>.dialogpanel{
+ overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;
+ overscroll-behavior:contain;touch-action:pan-y;
+ max-height:calc(100dvh - 24px);
+}
+</style>
+<script id="v272-modal-scroll-lock">
+(function(){
+ const overlayIds=['modalWrap','dialogWrap'];
+ let locked=false, savedY=0, touchY=0;
+ const overlays=()=>overlayIds.map(id=>document.getElementById(id)).filter(Boolean);
+ const isOpen=()=>overlays().some(el=>el.classList.contains('open'));
+ function syncLock(){
+  const shouldLock=isOpen();
+  if(shouldLock===locked)return;
+  if(shouldLock){
+   savedY=window.scrollY||window.pageYOffset||0;
+   document.body.style.top='-'+savedY+'px';
+   document.documentElement.classList.add('jyb-modal-locked');
+   document.body.classList.add('jyb-modal-locked');
+   locked=true;
+  }else{
+   document.documentElement.classList.remove('jyb-modal-locked');
+   document.body.classList.remove('jyb-modal-locked');
+   document.body.style.top='';
+   locked=false;
+   window.scrollTo(0,savedY);
+  }
+ }
+ const observer=new MutationObserver(syncLock);
+ overlays().forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
+ syncLock();
+ // iOS scroll chaining fallback: allow inner panel scrolling, block movement at its edges.
+ document.addEventListener('touchstart',function(e){
+  if(!locked||e.touches.length!==1)return;
+  touchY=e.touches[0].clientY;
+ },{capture:true,passive:true});
+ document.addEventListener('touchmove',function(e){
+  if(!locked||e.touches.length!==1||!e.cancelable)return;
+  const target=e.target instanceof Element?e.target:null;
+  const overlay=target?.closest('#modalWrap.open,#dialogWrap.open');
+  if(!overlay){e.preventDefault();return;}
+  const panel=target.closest('#modalContent,#dialogContent');
+  if(!panel){e.preventDefault();return;}
+  const y=e.touches[0].clientY,dy=y-touchY;
+  touchY=y;
+  // Scrollable nested controls (e.g. category picker) should scroll before the main panel.
+  let node=target;
+  while(node&&overlay.contains(node)){
+   if(node instanceof HTMLElement){
+    const style=getComputedStyle(node);
+    const scrollable=/(auto|scroll)/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+1;
+    if(scrollable){
+     const atTop=node.scrollTop<=1,atBottom=node.scrollTop+node.clientHeight>=node.scrollHeight-1;
+     if((dy>0&&!atTop)||(dy<0&&!atBottom))return;
+    }
+   }
+   if(node===panel)break;
+   node=node.parentElement;
+  }
+  e.preventDefault();
+ },{capture:true,passive:false});
+})();
+</script>
 </body></html>
