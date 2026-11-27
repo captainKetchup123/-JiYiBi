@@ -1616,7 +1616,7 @@ function buildTrendBuckets(){
 }
 function renderHomeBalances(){
  const target=document.getElementById('homeBalances');if(!target)return;
- const shown=data.accounts.filter(a=>a.kind!=='credit'&&Number(a.initial)>0);
+ const shown=data.accounts.filter(a=>a.kind!=='credit');
  target.innerHTML=shown.length?shown.map(a=>`<div class="home-balance-row"><span class="home-balance-name">${esc(a.icon||'🏦')} ${esc(a.name)} <span class="dim" style="font-size:.9em;font-weight:600">${esc(a.currency||'EUR')}</span></span><strong>${money(balance(a.id),false,a.currency||'EUR')}</strong></div>`).join(''):'<div class="empty">还没有设置初始余额的普通账户</div>';
 }
 function renderReportTrend(){let months=buildTrendBuckets();document.querySelectorAll(".trend-switch button").forEach(btn=>{const active=Number(btn.dataset.range)===trendRange;btn.classList.toggle("active",active);btn.setAttribute("aria-pressed",String(active))});let top=Math.max(1,...months.flatMap(m=>[m.income,m.expense]));document.getElementById('trend').innerHTML=months.map(m=>`<div class="barcol"><div class="barpair"><div class="bar in" title="收入 ${money(m.income)}" style="height:${m.income/top*100}%"></div><div class="bar out" title="支出 ${money(m.expense)}" style="height:${m.expense/top*100}%"></div></div><div class="axis">${m.label}</div></div>`).join('');}
@@ -2216,7 +2216,25 @@ function budgetEntries(){return Object.entries(data.budgets||{}).flatMap(([name,
 function spentForBudget(name,cur){return data.transactions.filter(t=>t.type==='expense'&&ym(t.date)===monthKey()&&t.category===name&&(t.currency||acct(t.account)?.currency||'EUR')===cur).reduce((s,t)=>s+Number(t.amount||0),0)}
 function renderBudgets(){const active=budgetEntries();document.getElementById('budgetList').innerHTML=active.length?active.map(e=>{const spent=spentForBudget(e.name,e.cur),ratio=Math.round(spent/e.budget*100),cat=data.categories.expense.find(c=>c.name===e.name);return `<div class="budgetrow"><div class="spread"><b>${esc(cat?.icon||'📁')} ${esc(e.name)} · ${e.cur==='EUR'?'欧元':'人民币'}</b><button class="link" onclick="openBudget(${JSON.stringify(e.name)},'${e.cur}')">修改</button></div><div class="spread" style="margin-top:12px"><b>${money(spent,false,e.cur)}</b><span class="dim">预算 ${money(e.budget,false,e.cur)} · ${ratio}%</span></div><div class="progress ${spent>e.budget?'warn':''}"><div style="width:${Math.min(100,ratio)}%"></div></div></div>`}).join(''):'<div class="empty">还没有预算，点击「设置预算」为分类设置每月限额</div>'}
 function creditDue(aid){const a=acct(aid);if(!a||a.kind!=='credit')return 0;const due=Number(a.initial||0)+data.transactions.reduce((sum,t)=>sum+(t.type==='expense'&&t.account===aid?Number(t.amount):0)-(t.type==='repayment'&&t.toAccount===aid?Number(t.amount):0),0);return Math.round(due*100)/100}
-function balance(aid){let a=acct(aid);if(!a)return 0;if(a.kind==='credit')return creditDue(aid);return Number(a.initial)+data.transactions.reduce((sum,t)=>sum+(t.type==='income'&&t.account===aid?Number(t.amount):0)-(t.type==='expense'&&t.account===aid?Number(t.amount):0)-(t.type==='repayment'&&t.account===aid?Number(t.amount):0)+(t.type==='transfer'&&t.toAccount===aid?Number(t.toAmount??t.amount):0)-(t.type==='transfer'&&t.account===aid?Number(t.amount):0),0)}
+// V275: 每笔还款从所选付款账户扣钱，并同步减少目标信用卡待还。
+// 统一按字符串 ID 对账，兼容旧版/云端资料里的账户 ID 类型差异。
+function balance(aid){
+ const a=acct(aid);if(!a)return 0;
+ if(a.kind==='credit')return creditDue(aid);
+ const key=String(aid),amount=v=>Number.isFinite(Number(v))?Number(v):0;
+ let result=amount(a.initial);
+ for(const t of data.transactions){
+  const from=String(t.account??''),to=String(t.toAccount??'');
+  if(t.type==='income'&&from===key)result+=amount(t.amount);
+  else if(t.type==='expense'&&from===key)result-=amount(t.amount);
+  else if(t.type==='repayment'&&from===key)result-=amount(t.amount);
+  else if(t.type==='transfer'){
+   if(from===key)result-=amount(t.amount);
+   if(to===key)result+=amount(t.toAmount??t.amount);
+  }
+ }
+ return Math.round(result*100)/100;
+}
 // V112: 每月固定还款日 + 单次截止日，所有倒计时使用本地日历日期，避免夏令时差异。
 function creditDateParts(date){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date||''))return null;
@@ -2954,9 +2972,25 @@ function saveRepayment(e){
   if(amount>due+0.005)return repaymentError('还款金额不能超过待还金额 '+money(due,false,card.currency)+'。');
   const t={id:old?.id||id(),type:'repayment',account,toAccount:card.id,amount,currency:card.currency,date,category:'信用卡还款',subcategory:'',note:document.getElementById('repNote')?.value.trim()||'',created:old?.created||new Date().toISOString()};
   const backup=old?{...old}:null;
+  const previousSource=backup?acct(backup.account):null;
+  const beforeCurrent=balance(source.id);
+  const beforeOld=previousSource&&String(previousSource.id)!==String(source.id)?balance(previousSource.id):null;
   if(old)Object.assign(old,t);else data.transactions.push(t);
+  // 校验付款账户扣除的金额；编辑还款时仅调整差额，并恢复原付款账户的金额。
+  const expected=beforeCurrent-amount+(backup&&String(backup.account)===String(source.id)?Number(backup.amount):0);
+  if(Math.abs(balance(source.id)-expected)>0.011 || (beforeOld!==null&&Math.abs(balance(previousSource.id)-(beforeOld+Number(backup.amount)))>0.011)){
+   if(old)Object.assign(old,backup);else data.transactions=data.transactions.filter(x=>x.id!==t.id);
+   return repaymentError('付款账户余额未能正确更新，本次还款未保存，请重试。');
+  }
   try{save()}catch(error){if(old)Object.assign(old,backup);else data.transactions=data.transactions.filter(x=>x.id!==t.id);return repaymentError('保存失败：'+(error?.message||error))}
-  editingRepaymentId=null;closeModal();try{render()}catch(error){console.error('还款已保存，页面刷新失败',error)}toast('信用卡还款已成功记录。','还款已保存','✓');return true;
+  editingRepaymentId=null;closeModal();
+  try{
+   render();
+   // 即使当前显示其他标签，也更新首页和账户列表的现有 DOM，避免切回时仍显示旧余额。
+   if(document.getElementById('homeBalances'))renderHomeBalances();
+   if(document.getElementById('accountGrid'))renderAccounts();
+  }catch(error){console.error('还款已保存，页面刷新失败',error)}
+  toast(`${source.name}余额已更新：${money(balance(source.id),false,source.currency||'EUR')}；信用卡待还已减少。`,'还款已保存','✓');return true;
  }catch(error){console.error('信用卡还款失败',error);return repaymentError('还款处理失败：'+(error?.message||error))}
 }
 function deleteRepayment(){
@@ -2972,7 +3006,7 @@ function confirmDeleteRepayment(){
  try{save()}catch(error){data.transactions=previousTransactions;const err=document.getElementById('deleteRepaymentError');if(err){err.textContent='删除失败：'+(error?.message||error);err.style.display='block';}return;}
  editingRepaymentId=null;
  closeDialog();closeModal();
- try{render()}catch(error){console.error('还款已删除，界面刷新失败',error)}
+ try{render();renderHomeBalances();renderAccounts()}catch(error){console.error('还款已删除，界面刷新失败',error)}
  toast('还款记录已删除，待还金额和账户余额已重新计算。');
 }
 function editRates(){modal(`<div class="modalhead"><h2>手动设置汇率</h2><button class="close" onclick="closeModal()">✕</button></div><p class="smallnote">仅用于图表和汇总折算；已有交易金额和账户余额不变。请自行核对所需汇率。</p><form onsubmit="saveRates(event)">${[['CNY','人民币'],['USD','美元'],['GBP','英镑']].map(([c,n])=>`<label class="formlabel">1 EUR = ? ${n} (${c})</label><input class="field" id="rate${c}" type="number" step="any" min="0.000001" required value="${data.rates[c]}">`).join('')}<div class="modalfooter"><button class="btn" type="button" onclick="closeModal()">取消</button><button class="btn primary">保存汇率</button></div></form>`)}
